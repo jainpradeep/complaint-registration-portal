@@ -1,0 +1,572 @@
+﻿<!-- <p><a [routerLink]="['/login']">Logout</a></p> -->
+<ngx-spinner style="position: fixed !important;"></ngx-spinner>
+<header>
+   <!-- Fixed navbar -->
+   <div style = "position: fixed;  right: 10px; top:100px;z-index: 9999"
+   *ngIf= "selectLocationSubTree.items.length>0?false:true && filteredLocationList[0].tag == selectLocationSubTree.tag">
+   <a class="btn btn-default" (click) = "inititateNewRecord();currentEntryMode = 'add';open(conten)" aria-label="Settings">
+      <i class="fa fa-plus fa-2x" aria-hidden="true"></i>
+      <h5>रिपोर्ट एंटर करे</h5>
+   </a>
+</div>
+
+   <nav style ="background-color:rgb(67, 32, 87)" class="navbar navbar-expand-md navbar-custom fixed-top overrides">
+      <a class="navbar-brand" href="#">पत्राचार रिपोर्ट एप्लिकेशन</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+      <span  class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <a class="btn btn-default" (click) = "open(content)" aria-label="Settings">
+            <i class="fa fa-plus" style="color:#fff;" aria-hidden="true"></i>
+            </a>
+            <a class="btn btn-default" (click) = "open(delete)" aria-label="delete">
+            <i class="fa fa-trash" style="color:#fff;" aria-hidden="true"></i>
+            </a>
+            <a class="btn btn-default" (click) = "open(edit);initEditLocation()" aria-label="delete">
+               <i class="fa fa-edit" style="color:#fff;" aria-hidden="true"></i>
+               </a>
+            <ul class="navbar-nav mr-auto">
+               <!-- <li class="nav-item active">
+                  <a class="nav-link" href="#">
+                  मुख पृष्ठ <span class="sr-only"></span></a>
+                  </li> -->
+               <li class="nav-item">
+                  <!-- <a class="nav-link" href="#">संपर्क</a> -->
+               </li>
+            </ul>
+            <form class="form-inline mt-2 mt-md-0">
+               <!-- <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="खोजे"> -->
+               <button class="btn btn-custom my-2 my-sm-0" (click)="logOut()" type="submit"><font color="white">लोग आउट</font>  </button>
+            </form>
+         </div>
+        <div class="btn-group">
+            <!-- <button type="button" class="btn btn-secondary">Settings</button>
+            <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown">
+            </button> -->
+            <div class="dropdown-menu">
+                <a class="dropdown-item" (click) = "open(content)" aria-label="Settings"Add location>
+                    <i class="fa fa-plus" style="color:#0000;" aria-hidden="true"></i> 
+                    </a>
+                    <a class="dropdown-item" (click) = "open(delete)" aria-label="delete">Delete Location
+                    <i class="fa fa-trash" style="color:#0000;" aria-hidden="true"></i>
+                    </a>
+                    <a class="dropdown-item" (click) = "open(edit);initEditLocation()" aria-label="delete">>Edit Location
+                       <i class="fa fa-edit" style="color:#0000;" aria-hidden="true"></i>
+                       </a>
+           
+            </div>
+          </div>
+         <ul class="navbar-nav mr-auto">
+            <!-- <li class="nav-item active">
+               <a class="nav-link" href="#">
+               मुख पृष्ठ <span class="sr-only"></span></a>
+               </li> -->
+            <li class="nav-item">
+               <!-- <a class="nav-link" href="#">संपर्क</a> -->
+            </li>
+         </ul>
+         <!-- <form class="form-inline mt-2 mt-md-0">
+            <button class="btn btn-outline-success my-2 my-sm-0" (click)="logOut()" type="submit"> लोग आउट </button>
+         </form> -->
+      </div>
+   </nav>
+</header>
+<ngx-spinner></ngx-spinner>
+<div class="wrapper">
+   <div id = "myCheck" class="sidenav">
+      <ng-material-multilevel-menu (click) = "selectLocation($event.target); " (selectedItem)="selectedItem($event)" [configuration]='config'  [items]='appitems'></ng-material-multilevel-menu>
+   </div>
+</div>
+
+<div class="container contentHead contentHeadTop">
+    <div class="row">
+    <div class="col-md-12">
+        <h2 class = "font-color">हिन्दी रिपोर्ट  - {{selectLocationSubTree.tag}}</h2>
+        <div>
+           <div class="row">
+              <button class="btn btn-sm btn-custom mr-2 offset-xs-1" *ngIf = "selectLocationSubTree.frequency == '15'" [ngClass]="{'btn-primary': selectedDateDuration === '15'}" (click)="setDateRange(15)"><font color="white">पाक्षिक</font> </button>
+              <button class="btn btn-sm btn-custom mr-2" [ngClass]="{'btn-primary': selectedDateDuration === '30'}" (click)="setDateRange(30)"><font color="white">मासिक</font> </button>
+              <button class="btn btn-sm btn-custom mr-2" [ngClass]="{'btn-primary': selectedDateDuration === '90'}" (click)="setDateRange(90)"><font color="white">त्रैमासिक</font></button>
+              <button class="btn btn-sm btn-custom mr-2" [ngClass]="{'btn-primary': selectedDateDuration === '180'}" (click)="setDateRange(180)"><font color="white">छमाही</font></button>
+              <button class="btn btn-sm btn-custom mr-2" [ngClass]="{'btn-primary': selectedDateDuration === '365'}" (click)="setDateRange(365)"><font color="white">वार्षिक</font></button>
+                <input class="form-control col-sm-2" placeholder="आरंभ करने की तिथि"
+                       name="dp1" [(ngModel)]="startDate" ngbDatepicker #d1="ngbDatepicker">
+                <div class="input-group-append mr-2">
+                        <i class="fa fa-calendar fa-2x " (click)="d1.toggle()" aria-hidden="true"></i>
+                </div>
+                <input class="form-control col-sm-2 " placeholder="अंतिम तिथि"
+                       name="dp2" [(ngModel)]="endDate" ngbDatepicker #d2="ngbDatepicker">
+                <div class="input-group-append mr-2">
+                        <i class="fa fa-calendar fa-2x" (click)="d2.toggle()" aria-hidden="true"></i>
+                </div>
+                <button class="btn btn-sm btn-custom mr-2" (click)="setCustumDateRange()"><font color="white">
+                    कस्टम समय अवधि</font></button>
+
+              </div>
+            <br>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container contentHead" *ngIf = "showSummary == true">
+      <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class= "font-color">ग्राफ</h3>
+            </div>
+            <!-- <div class="d-flex">
+                <div class="p-2 flex-fill">-------------------------------------------------------------------</div>
+                <div class="p-2 flex-fill"></div>
+                <div class="p-2 flex-fill"></div>
+              </div> -->
+            <div class="container parent">
+                    <div class="row child">
+                    <div class="col-sm-4">
+                        <div [chart]="chart1"></div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div [chart]="chart2"></div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div [chart]="chart3"></div>
+                    </div>
+                </div>
+                <div class="row child" *ngIf = "selectLocationSubTree.items.length > 0">
+                   <div class="col-sm-7">
+                       <div class="row">
+                            <div class="col-sm-6">
+                                    <div [chart]="chart4"></div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div [chart]="chart5"></div>
+                                </div>
+                       </div>
+                   </div>
+
+                   <div class="col-sm-5">
+                        <div class="row">
+                                <div class="col-sm-12">
+                                        <div [chart]="chart6"></div>
+                                </div>
+                            </div>
+                </div>
+                </div>
+                <div class="row child" *ngIf = "selectLocationSubTree.items.length > 0">
+                        <div class="col-sm-7">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div [chart]="chart7"></div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div [chart]="chart8"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    <div class="col-sm-5">
+                            <div class="row">
+                                    <div class="col-sm-12">
+                                            <div [chart]="chart9"></div>
+                                    </div>
+                                </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+</div>
+<div class="container content" *ngIf = "showSummary == true">  
+    <div class="row">
+        <div class="col-sm-6">
+        <section>
+            <br>
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class= "font-color">सारांश</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="container-fluid ">
+                    <div class="row row-offcanvas row-offcanvas-right">
+                        <div class="col-xs-12 col-sm-9 col-sm-push-3">
+                            <table class="table center">
+                                <thead>
+                                <tr>
+                                    <th class="rotate">
+                                        <div><span>स्थान </span></div>
+                                    </th>
+                                    <th class="rotate">
+                                        <div><span>
+                                            विभाग द्वारा हिन्दी में भेजे गए पत्रों/ई-मेलों की कुल संख्‍या </span>
+                                        </div>
+                                    </th>
+                                    <th class="rotate">
+                                        <div><span>
+                                            विभाग द्वारा लिखी जा रही हिन्‍दी टिप्‍पणियों की कुल संख्‍या </span>
+                                        </div>
+                                    </th>
+                                    <th class="rotate">
+                                        <div><span>
+                                            विभाग में हिन्‍दी में प्राप्‍त कुल पत्र/ई-मेलों  की कुल संख्‍या  </span>
+                                        </div>
+                                    </th>
+                                    <th class="rotate">
+                                        <div><span>
+                                            अंग्रेजी में भेजे गए पत्रों/ई-मेलों की कुल संख्‍या </span>
+                                        </div>
+                                    </th>
+                                    <th class="rotate">
+                                        <div><span>
+                                            विभाग द्वारा लिखी जा रही अंग्रेजी टिप्‍पणियों की कुल संख्‍या
+                                            </span>
+                                        </div>
+                                    </th>                  
+                                    <th class="rotate">
+                                        <div><span>
+                                            विभाग में अंग्रेजी में प्राप्‍त कुल पत्र/ई-मेलों </span>
+                                        </div>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr *ngFor="let filteredflatSummary of flattenedSummaryList">
+                                    <th class="row-header">{{filteredflatSummary.tag}}</th>
+                                    <td>{{filteredflatSummary.summary.hiraricalTotalHLettersSent}}</td>
+                                    <td>{{filteredflatSummary.summary.hiraricalTotalHCommentsSent}}</td>
+                                    <td>{{filteredflatSummary.summary.hiraricalTotalHLettersRecieved}}</td>
+                                    <td>{{filteredflatSummary.summary.hiraricalTotalELettersSent}}</td>
+                                    <td>{{filteredflatSummary.summary.hiraricalTotalECommentsSent}}</td>
+                                    <td>{{filteredflatSummary.summary.hiraricalTotalELettersRecieved}}</td>
+                                    <!-- <td>{{filteredflatSummary.summary.hiraricalTotalHEmailsSent}}</td> -->
+                                    <!-- <td>{{filteredflatSummary.summary.hiraricalTotalHCorrespondenceSent}}</td> -->
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!--/.col-xs-12.col-sm-9-->
+                    </div>
+                    <!--/row-->        
+                    </div>
+                    <!--/.container-->
+                </div>
+            </div>
+            <div class="panel panel-info" *ngIf = "HindiDataService.data.length > 0 && selectLocationSubTree.items[0] ? selectLocationSubTree.items[0].items.length==0 : false || selectLocationSubTree.items.length==0">
+                <div class="panel-heading">
+                    <h3 class= "font-color">
+                    सम्पूर्ण क्षेत्र के अभिलेख
+                    </h3>
+                </div>
+                <div *ngIf= "selectLocationSubTree.items.length>0?false:true && filteredLocationList[0].tag == selectLocationSubTree.tag && HindiDataService.data.length == 0" (click) = "inititateNewRecord();currentEntryMode = 'add';open(conten)">
+                <img src="/src/app/home/zerostate.png" alt="zeroState" style="width:700px;height:400px;margin-left:100px">
+                </div>
+            <div class="panel-body" *ngIf= "HindiDataService.data.length > 0">
+                <div class="container-fluid ">
+                    <div class="row row-offcanvas row-offcanvas-right">
+                    <div class="col-xs-12 col-sm-9 col-sm-push-3">
+                        <table class="table center">
+                            <thead>
+                                <tr>
+                                <th class="rotate">
+                                    <div><span>स्थान </span></div>
+                                </th>
+                                <th class="rotate">
+                                    <div><span>आरंभ करने की तिथि</span></div>
+                                </th>
+                                <th class="rotate">
+                                    <div><span>अंतिम तिथि</span></div>
+                                </th>
+                                <th class="rotate">
+                                    <div><span>हिन्दी में भेजे गए पत्रों/ई-मेलों की संख्‍या </span></div>
+                                </th>
+                                <th class="rotate">
+                                    <div><span>विभाग में हिन्‍दी में प्राप्‍त कुल पत्रों/ई-मेलों की संख्‍या
+                                        </span>
+                                    </div>
+                                </th>     
+                                <th class="rotate">
+                                        <div><span>विभाग द्वारा लिखी जा रही हिन्‍दी टिप्‍पणियों की संख्‍या </span></div>
+                                </th>
+                                <th class="rotate">
+                                    <div><span>अंग्रेजी में भेजे गए पत्रों/ई-मेलों की संख्‍या</span></div>
+                                </th>
+                                <th class="rotate">
+                                    <div><span>विभाग द्वारा लिखी जा रही अंग्रेजी टिप्‍पणियों की संख्‍या
+                                        </span>
+                                    </div>
+                                </th>
+                                <th class="rotate">
+                                    <div><span>विभाग में अंग्रेजी में प्राप्‍त कुल पत्रों/ई-मेलों की संख्‍या
+                                        </span>
+                                    </div>
+                                </th>
+                                <!-- <th class="rotate">
+                                    <div><span>हिन्दीें पत्राचार प्रतिशत</span></div>
+                                    </th> -->
+                                <th class="rotate">
+                                    <div><span></span></div>
+                                </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let hindiRecord of HindiDataService.data | filter : selectLocationSubTree ">
+                                <th class="row-header">{{hindiRecord.tag}}  </th>
+                                <td>{{hindiRecord.fromDate | date}}</td>
+                                <td>{{hindiRecord.toDate | date}}</td>
+                                <td>{{hindiRecord.hLettersSent||0}}</td>
+                                <td>{{hindiRecord.hLettersRecieved||0}}</td>
+                                <td>{{hindiRecord.hCommentsSent||0}}</td>
+                                <td>{{hindiRecord.eLettersSent||0}}</td>
+                                <!-- <td>{{hindiRecord.hEmailsSent}}</td> -->
+                                <td>{{hindiRecord.eCommentsSent||0}}</td>
+                                <td>{{hindiRecord.eLettersRecieved||0}}</td>
+                                <!-- <td>{{hindiRecord.hCorrespondenceSent}}</td> -->
+                                <td style="width: 100%">
+                                    <i *ngIf= "selectLocationSubTree.items.length>0?true:false" (click) = "currentEntryMode = 'edit';editHindiReport(hindiRecord);open(conten)" class="fa fa-edit fa-2x"></i>
+                                    <i *ngIf= "selectLocationSubTree.items.length>0?true:false" (click) = "deleteHindiReport(hindiRecord);" class="fa fa-trash fa-2x" aria-hidden="true"></i>
+                                </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!--/.col-xs-12.col-sm-9-->
+                    </div>
+                    <!-- <div class="pull-right" style = "position: absolute;" class="panel panel-default"  *ngIf= "selectLocationSubTree.items.length>0?false:true">
+                    <div class="panel-body">
+                        <a class="btn btn-default" (click) = "inititateNewRecord();currentEntryMode = 'add';open(conten)" aria-label="Settings">
+                            <i class="fa fa-plus fa-2x" aria-hidden="true"></i>
+                            <h5>रिपोर्ट एंटर करे</h5>
+                        </a>
+                    </div>
+                    </div> -->
+                    <!--/row-->
+                </div>
+                <!--/.container-->
+            </div>
+        </div>
+        </section>
+    </div>
+</div>
+</div>
+<div class="container content" style = "height: 600px" *ngIf = "showSummary == false"> 
+<img src="/404.png" alt="zeroState" style="width:700px;height:500px;margin-left:100px">
+</div>
+
+<ng-template #conten let-c="close" let-d="dismiss">
+   <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">रिपोर्ट एंटर करे </h4>
+      <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+      </button>
+   </div>
+   <form style="padding: 10px">
+      <div class="row">
+         <div class="col-md-12">
+            <div class="form-group ">
+               <ngb-datepicker  [maxDate] = "maxDate" #dp (select)="onDateSelection($event)" [displayMonths]="2" [dayTemplate]="t">
+               </ngb-datepicker>          
+            </div>
+            <ng-template #t let-date="date" let-focused="focused">
+               <span class="custom-day"
+               [class.focused]="focused"
+               [class.range]="isRange(date)"
+               [class.faded]="isHovered(date) || isInside(date)"
+               (mouseenter)="hoveredDate = date"
+               (mouseleave)="hoveredDate = null">
+               {{ date.day }}
+               </span>
+            </ng-template>
+         </div>
+      </div>
+      <div *ngIf = "duplicateFound" class="alert alert-danger">
+        इन तारीखों क लिए आपके स्टेशन की रिपोर्ट पहले से सबमिट हो चुकी है
+      </div>
+
+      <div class="row">
+         <div class="col-md">
+            <div class="form-group ">
+               <label for="usr">हिन्दी में भेजे गए पत्रों/ई-मेलों की संख्‍या :</label>
+               <input numbersOnly  [(ngModel)] ="newEntry.hLettersSent" [ngModelOptions]="{standalone: true}" type="text" class="form-control" id="usr">
+            </div>
+         </div>
+         <div class="col-md">
+            <div class="form-group">
+               <label for="usr">अंग्रेजी में भेजे गए पत्रों/ई-मेलों की संख्‍या :</label>
+               <input numbersOnly [(ngModel)] ="newEntry.eLettersSent" [ngModelOptions]="{standalone: true}" type="text" class="form-control" id="usr">
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         <!-- <div class="col-md-6">
+            <div class="form-group">
+               <label for="usr">विभाग द्वारा भेजे गए कुल पत्रों/ई-मेलों की संख्‍या  :</label>
+               <input [(ngModel)] ="newEntry.hEmailsSent" [ngModelOptions]="{standalone: true}" type="text" class="form-control" id="usr">
+            </div>
+            </div> -->
+         <div class="col-md-6">
+            <div class="form-group">
+               <label for="usr">विभाग द्वारा लिखी जा रही हिन्‍दी टिप्‍पणियों की संख्‍या  :</label>
+               <input numbersOnly [(ngModel)] ="newEntry.hCommentsSent" [ngModelOptions]="{standalone: true}" type="text" class="form-control" id="usr">
+            </div>
+         </div>
+         <div class="col-md-6">
+            <div class="form-group">
+               <label for="usr">विभाग द्वारा लिखी जा रही अंग्रेजी टिप्‍पणियों की संख्‍या  :</label>
+               <input numbersOnly [(ngModel)] ="newEntry.eCommentsSent" [ngModelOptions]="{standalone: true}" type="text" class="form-control" id="usr">
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-md-6">
+            <div class="form-grou">
+               <label for="usr"> हिन्दी में प्राप्त कुल पत्र :</label>
+               <input numbersOnly [(ngModel)] ="newEntry.hLettersRecieved" [ngModelOptions]="{standalone: true}" type="text" class="form-control" id="usr">
+            </div>
+         </div>
+         <div class="col-md-6">
+            <div class="form-group">
+               <label for="usr"> अँग्रेजी में प्राप्त कुल पत्र  :</label>
+               <input numbersOnly [(ngModel)] ="newEntry.eLettersRecieved" [ngModelOptions]="{standalone: true}" type="text" class="form-control" id="usr">
+            </div>
+         </div>
+      </div>
+      <!-- <div class="row">
+         <div class="col-md-6">
+            <div class="form-group">
+               <label for="usr">पत्राचार प्रतिशत  :</label>
+               <input [(ngModel)] ="newEntry.hCorrespondenceSent" [ngModelOptions]="{standalone: true}" type="text" class="form-control" id="usr">
+            </div>
+         </div>
+         </div> -->
+   </form>
+   <div class="modal-footer">
+      <button type="button" class="btn btn-outline-dark" (click)="sendEntry(c);">Save</button>
+   </div>
+</ng-template>
+<ng-template #content let-c="close" let-d="dismiss">
+   <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">नया कार्यालय जोड़े</h4>
+      <button type="button" class="close" aria-label="Close" (click)="d('Cross click');">
+      <span aria-hidden="true">&times;</span>
+      </button>
+   </div>
+   <div class="modal-body">
+      <form>
+         <div class="form-group">
+            <div class="form-group">
+               <label for="usr">स्थान:</label>
+               <input placeholder="स्थान" [(ngModel)] ="newLocation.tag" [ngModelOptions]="{standalone: true}" type="text" class="form-control" id="usr">
+            </div>
+         </div>
+         <div class="form-group">
+            <div class="form-group">
+               <label for="usr">हिंदी कर्मचारी संख्या:</label>
+               <input placeholder="हिंदी कर्मचारी संख्या" [(ngModel)] ="newLocation.employee" [ngModelOptions]="{standalone: true}" type="text" class="form-control" id="usr">
+            </div>
+         </div>
+         <div class="form-group">
+            <div class="form-group">
+               <label for="usr">कार्यालय</label>
+               <select   class='form-control' 
+               [(ngModel)]='newLocation.parent' [ngModelOptions]="{standalone: true}" [value]=locationList[0]>
+               <option placeholder="कार्यालय" *ngFor="let location of locationList">{{location.tag}}</option>
+               </select>         
+            </div>
+         </div>
+         <div class="form-group">
+            <div class="form-group">
+               <label for="usr">लोकेशन हिंदी अधिकारी ईमेल:</label>
+               <input placeholder="लोकेशन हिंदी अधिकारी ईमेल" [(ngModel)] ="newLocation.officerEmail" [ngModelOptions]="{standalone: true}" type="text" class="form-control" id="usr">
+            </div>
+         </div>
+         <div class="form-group">
+            <div class="form-group">
+               <label for="usr">लोकेशन हिंदी कोर्डिनेटर ईमेल:</label>
+               <input placeholder="लोकेशन हिंदी कोर्डिनेटर ईमेल" [(ngModel)] ="newLocation.coordinatorEmail" [ngModelOptions]="{standalone: true}" type="text" class="form-control" id="usr">
+            </div>
+         </div>
+         <div class="form-group">
+            <div class="form-group">
+               <label for="usr">रिपोर्ट फ्रीक्वेंसी :</label>
+               <select   class='form-control' 
+               [(ngModel)]='newLocation.frequency' [ngModelOptions]="{standalone: true}" [value]=locationList[0]>
+               <option placeholder="कार्यालय" *ngFor="let frequency of frequency">{{frequency}}</option>
+               </select>         
+            </div>
+         </div>
+      </form>
+   </div>
+   <div class="modal-footer">
+      <button type="button" class="btn btn-outline-dark" (click)="c('Save click');saveNewLocation();">Save</button>
+   </div>
+</ng-template>
+<ng-template #delete let-c="close" let-d="dismiss">
+   <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">लोकेशन डिलीट करे</h4>
+      <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+      </button>
+   </div>
+   <form style="padding: 10px">
+      <div class="row">
+         <div class="col-md">
+            <div class="form-group">
+               <button class="btn btn-outline-dark px-2 m-1" (click) = "c('Save click');deleteLocation(location.tag)" *ngFor="let location of flattenedSummaryList">
+               {{location.tag + " "}}<span class="fa fa-times"></span> 
+               </button>
+            </div>
+         </div>
+      </div>
+   </form>
+   <div class="modal-footer">
+      <button type="button" class="btn btn-outline-dark" (click)="c('Save click');">Cancle</button>
+   </div>
+</ng-template>
+<ng-template #edit let-c="close" let-d="dismiss">
+   <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">लोकेशन अपडेट करे</h4>
+      <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+      </button>
+   </div>
+   <div class="modal-body">
+      <form>
+         <div class="form-group">
+            <div class="form-group">
+               <label for="usr">स्थान:</label>
+               <input placeholder="स्थान" [(ngModel)] ="newEditLocation.tag" [ngModelOptions]="{standalone: true}" type="text" class="form-control" id="usr">
+            </div>
+         </div>
+         <div class="form-group">
+            <div class="form-group">
+               <label for="usr">हिंदी कर्मचारी संख्या:</label>
+               <input placeholder="हिंदी कर्मचारी संख्या" [(ngModel)] ="newEditLocation.employee" [ngModelOptions]="{standalone: true}" type="text" class="form-control" id="usr">
+            </div>
+         </div>
+         <div class="form-group">
+            <div class="form-group">
+               <label for="usr">लोकेशन हिंदी अधिकारी ईमेल:</label>
+               <input placeholder="लोकेशन हिंदी अधिकारी ईमेल" [(ngModel)] ="newEditLocation.officerEmail" [ngModelOptions]="{standalone: true}" type="text" class="form-control" id="usr">
+            </div>
+         </div>
+         <div class="form-group">
+            <div class="form-group">
+               <label for="usr">लोकेशन हिंदी कोर्डिनेटर ईमेल:</label>
+               <input placeholder="लोकेशन हिंदी कोर्डिनेटर ईमेल" [(ngModel)] ="newEditLocation.coordinatorEmail" [ngModelOptions]="{standalone: true}" type="text" class="form-control" id="usr">
+            </div>
+         </div>
+         <div class="form-group">
+            <div class="form-group">
+               <label for="usr">रिपोर्ट फ्रीक्वेंसी :</label>
+               <select   class='form-control' 
+               [(ngModel)]='newEditLocation.frequency' [ngModelOptions]="{standalone: true}" [value]=locationList[0]>
+               <option placeholder="कार्यालय" *ngFor="let frequency of frequency">{{frequency}}</option>
+               </select>         
+            </div>
+         </div>
+        </form>
+   </div>
+   <div class="modal-footer">
+      <button type="button" class="btn btn-outline-dark" (click)="c('Save click');editLocation();">Save</button>
+   </div>
+</ng-template>
