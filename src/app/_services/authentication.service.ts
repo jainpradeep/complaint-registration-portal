@@ -1,8 +1,7 @@
 ﻿import { Injectable, Renderer2, RendererFactory2  } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import {Router} from "@angular/router";
+import { Router} from "@angular/router";
 import { NgxSpinnerService } from 'ngx-spinner';
 
 @Injectable()
@@ -15,9 +14,8 @@ export class AuthenticationService {
     }
     login(username: string, password: string) {
         this.spinner.show();
-        return this.http.post<any>('http://10.10.100.24:3006/authenticate', { username: username, password: password })
+        return this.http.post<any>('http://localhost:3006/authenticate', { username: username, password: password })
         .pipe(map(res => {
-            // login successful if there's a jwt token in the response
             this.spinner.hide();
             if (res.msg == "success") {
                 // store user details and jwt token in local storage to keep user logged in between page refreshes

@@ -12,10 +12,9 @@ import { fakeBackendProvider } from './_helpers';
 import { AppComponent }  from './app.component';
 import { routing }        from './app.routing';
 import { ChartModule } from 'angular-highcharts';
-import { AlertComponent } from './_directives';
 import { AuthGuard } from './_guards';
 import { JwtInterceptor } from './_helpers';
-import { HindiDataService, AlertService, AuthenticationService, UserService,StatutoryClerance, LocationService, } from './_services';
+import { HindiDataService, AlertService, AuthenticationService, UserService,LocationService, } from './_services';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { FilterPipe} from './home/filter.pipe';
 import { HomeComponent } from './home';
@@ -30,7 +29,6 @@ import {Routes, RouterModule } from '@angular/router';
 import { appRoutes } from './app.routing';
 import { WindowScrolling } from "./_services";
 import { NumberDirective } from './numbers-only.directive';
-import 'babel-polyfill'
 
 @NgModule({
     imports: [
@@ -38,7 +36,6 @@ import 'babel-polyfill'
         ReactiveFormsModule,
         HttpClientModule,
         routing,
-        ChartModule,
         FormsModule,
         NgxSpinnerModule,
         FormsModule,
@@ -47,39 +44,36 @@ import 'babel-polyfill'
         AngularFontAwesomeModule,
         NgMaterialMultilevelMenuModule,
         BrowserAnimationsModule,
-        NgxChartsModule,
         CommonModule,
         RouterModule.forRoot(appRoutes, {onSameUrlNavigation: 'reload'})
         ],
-    declarations: [
-        AppComponent,
-        NumberDirective,
-        AlertComponent,
-        HomeComponent,
-        FilterPipe,
-        LoginComponent,
-        FileSelectDirective,
-        MyFilterPipe
-    ],
-    providers: [
-        AuthGuard,
-        HindiDataService,
-        AlertService,
-        AuthenticationService,
-        WindowScrolling,
-        LocationService,
-        UserService,
-        StatutoryClerance,
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: JwtInterceptor,
-            multi: true
-        },
-
-        // provider used to create fake backend
-        fakeBackendProvider
-    ],
-    bootstrap: [AppComponent]
+        declarations: [
+            AppComponent,
+            NumberDirective,
+            HomeComponent,
+            FilterPipe,
+            LoginComponent,
+            FileSelectDirective,
+            MyFilterPipe
+        ],
+        providers: [
+            AuthGuard,
+            HindiDataService,
+            AlertService,
+            AuthenticationService,
+            WindowScrolling,
+            LocationService,
+            UserService,
+            {
+                provide: HTTP_INTERCEPTORS,
+                useClass: JwtInterceptor,
+                multi: true
+            },
+    
+            // provider used to create fake backend
+            fakeBackendProvider
+        ],
+        bootstrap: [AppComponent]
 })
 
 export class AppModule { }

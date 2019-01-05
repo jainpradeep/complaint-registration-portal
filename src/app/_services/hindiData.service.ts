@@ -15,7 +15,7 @@ export class HindiDataService {
     }
      insertRecord(hindiStatusReport:any) {
          this.windowScrolling.disable(); this.spinner.show(); 
-        return this.http.post<any>('http://10.10.100.24:3006/insertHindiReport', hindiStatusReport)
+        return this.http.post<any>('http://localhost:3006/insertHindiReport', hindiStatusReport)
             .pipe(map(res => {
                 this.spinner.hide();  this.windowScrolling.enable();  
                 if (res.msg == "success") {
@@ -26,7 +26,7 @@ export class HindiDataService {
  }
     getRecords(filters: any){
          this.windowScrolling.disable(); this.spinner.show(); 
-        return this.http.post<any>('http://10.10.100.24:3006/getHindiData', 
+        return this.http.post<any>('http://localhost:3006/getHindiData', 
         filters )
         .pipe(map(res => {
             this.spinner.hide();  this.windowScrolling.enable();  
@@ -38,7 +38,7 @@ export class HindiDataService {
 
     deleteHindiReport(record:any){
          this.windowScrolling.disable(); this.spinner.show(); 
-        return this.http.post<any>('http://10.10.100.24:3006/deleteHindiData', record )
+        return this.http.post<any>('http://localhost:3006/deleteHindiData', record )
         .pipe(map(res => {
             this.spinner.hide();  this.windowScrolling.enable();  
             if (res.msg == "success") {
@@ -63,7 +63,7 @@ export class HindiDataService {
             _id:record._id
         }
          
-        return this.http.post<any>('http://10.10.100.24:3006/editHindiData', record )
+        return this.http.post<any>('http://localhost:3006/editHindiData', record )
         .pipe(map(res => {
             this.spinner.hide();  this.windowScrolling.enable();  
             if (res.msg == "success") {

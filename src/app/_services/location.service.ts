@@ -14,7 +14,7 @@ export class LocationService {
     constructor(private http: HttpClient,private router: Router, private spinner: NgxSpinnerService) { }
     insertLocation(location: any) {
         this.spinner.show()
-        return this.http.post<any>('http://10.10.100.24:3006/insertLocationHierarchy', {location})
+        return this.http.post<any>('http://localhost:3006/insertLocationHierarchy', {location})
             .pipe(map(res => {
                 this.spinner.hide();
                 localStorage.setItem('locationConfig', JSON.stringify(res.data));
@@ -26,7 +26,7 @@ export class LocationService {
     getLocationHierarchy() {
         this.spinner.show()
 
-        return this.http.post<any>('http://10.10.100.24:3006/getLocationHierarchy', {})
+        return this.http.post<any>('http://localhost:3006/getLocationHierarchy', {})
             .pipe(map(res => {
                 this.spinner.hide();
                 localStorage.setItem('locationConfig', JSON.stringify(res.locationConfig));
@@ -38,7 +38,7 @@ export class LocationService {
     }
     deleteLocation(location: any) {
         this.spinner.show()
-        return this.http.post<any>('http://10.10.100.24:3006/deleteLocation', {location})
+        return this.http.post<any>('http://localhost:3006/deleteLocation', {location})
             .pipe(map(res => {
                 this.spinner.hide();
                 return res;
@@ -46,7 +46,7 @@ export class LocationService {
     }
     editLocation(location: any) {
         this.spinner.show()
-        return this.http.post<any>('http://10.10.100.24:3006/editLocation', {location})
+        return this.http.post<any>('http://localhost:3006/editLocation', {location})
             .pipe(map(res => {
                 this.spinner.hide();
                 return res;

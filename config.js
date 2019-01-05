@@ -5,11 +5,10 @@ exports.config = { url: 'ldap://dcmjpl.ds.indianoil.in',
                password: 'Valleyforge42' }
 
 exports.locationConfig = appitems = [{
-                label: "Indian Oil",
                 faIcon: 'fa fa-sitemap fa-1x',
                 tag : "Indian Oil",
-                officer: "0030000",
-                externalRedirect: true,
+                admin: "adminIndianOil",
+                key : "ioc123",
                 items: [{
                     label: "Piplines",
                     faIcon: 'fa fa-sitemap fa-1x',
