@@ -78,9 +78,8 @@
    <div class="row">
       <div class="col-md-12">
          <div class="row">
-            <button class="btn btn-md btn-success mr-2 offset-xs-1" (click)="setDateRange(15)"><font color="white">Users</font> </button>
-            <button class="btn btn-md btn-success mr-2" (click)="setDateRange(30)"><font color="white">Problems</font> </button>
-            <button class="btn btn-md btn-success mr-2" (click)="setDateRange(90)"><font color="white">View Permissions</font></button>
+            <button class="btn btn-md btn-success mr-2 offset-xs-1" (click)="setCurrentView('userView')"><font color="white">Users</font> </button>
+            <button class="btn btn-md btn-success mr-2" (click)="setCurrentView('problemView')"><font color="white">Problems</font> </button>
          </div>
       </div>
    </div>
@@ -88,12 +87,21 @@
 
 <div class="container contentHead">
       <div class="row">
-        <div class="panel panel-default">
+        <div class="panel panel-default" *ngIf ="currentView == 'userView'">
             <div class="panel-heading">
                 <h3 class= "font-color">Users</h3>
             </div>
             <div class="container parent">
+                  <ng2-smart-table (deleteConfirm)="deleteUser($event)" (editConfirm)="updateUser($event)" (createConfirm)="addUser($event)" [source]="locationUsers" [settings]="settings"></ng2-smart-table>
             </div>
+        </div>
+        <div class="panel panel-default" *ngIf ="currentView == 'problemView'">
+            <div class="panel-heading">
+                <h3 class= "font-color">Problems</h3>
+            </div>
+            <!-- <div class="container parent">
+                  <ng2-smart-table (deleteConfirm)="deleteUser($event)" (editConfirm)="updateUser($event)" (createConfirm)="addUser($event)" [source]="locationUsers" [settings]="settings"></ng2-smart-table>
+            </div> -->
         </div>
       </div>
 </div>

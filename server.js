@@ -92,7 +92,56 @@ function transformToTree(arr){
                 );
               });
         })
+  }); 
+  
+  app.route('/insertUser')  
+  .post(function (req, res) {
+    MongoClient.connect("mongodb://localhost:27017/complaintRegPortal", { useNewUrlParser: true },function(err, database) {
+      console.log(err);  
+        if (err) return
+        database.db('complaintRegPortal').collection('users').insertOne(req.body.user, function(err, records) {
+            if (err) throw err;
+                res.send(
+                    (err === null) ? {msg: "success"} : {msg: err}
+                );
+              });
+        })
+  }); 
+  
+
+  app.route('/editUser')  
+  .post(function (req, res) {
+    MongoClient.connect("mongodb://localhost:27017/users", { useNewUrlParser: true },function(err, database) {
+        if (err) return
+        var editedUser = {$set: { eid: req.body.user.eid, location: req.body.user.location, viewPermissionRoot: req.body.user.viewPermissionRoot}};
+        req.body.user._id = new ObjectID.createFromHexString(req.body.user._id.toString());
+            database.db('complaintRegPortal').collection('users').updateOne({"_id": req.body.user._id}, editedUser, function (er, result) {
+            if (er) throw er;
+            res.send(
+              (er === null) ? {msg: "success", data:result} : {msg: er}
+          );
+           database.close();
+          });
+      })
   });  
+
+  app.route('/deleteUser')  
+  .post(function (req, res) {
+    MongoClient.connect("mongodb://localhost:27017/complaintRegPortal", { useNewUrlParser: true },function(err, database) {
+      console.log(err);  
+        if (err) return
+          req.body.user._id = new ObjectID.createFromHexString(req.body.user._id.toString());
+          database.db('complaintRegPortal').collection("users").deleteOne( {"_id": req.body.user._id}, function(err, obj) {
+            if (err) throw err;
+           database.close();
+           res.send(
+            (err === null) ? {msg: "success"} : {msg: err}
+        );
+          });
+      })
+  });  
+
+
 
   app.route('/deleteLocation')  
   .post(function (req, res) {
@@ -143,6 +192,21 @@ function transformToTree(arr){
       })
   });  
 
+  app.route('/getLocationUsers')  
+  .post(function (req, res) {
+    MongoClient.connect("mongodb://localhost:27017/complaintRegPortal", { useNewUrlParser: true },function(err, database) {
+        if (err) return
+          database.db('complaintRegPortal').collection('users').find({location: req.body.location}).toArray(function(err, result) {
+            if (err) throw err;
+            var data = JSON.parse(JSON.stringify(result));  
+            res.send({"msg" : "success",
+              "locationUsers" : data,
+            })
+            database.close();
+          });
+      })
+  });  
+
 app.route('/authenticate')  
     .post(function (req, res) {
           MongoClient.connect("mongodb://127.0.0.1:27017/hindiDB",{ useNewUrlParser: true } ,function(er,database){     
@@ -161,11 +225,16 @@ app.route('/authenticate')
         database.db('complaintRegPortal').collection('locationHierarchy').find({}).toArray(function(er, result) {
         if (err) throw er;
           var locationHierarchy = JSON.parse(JSON.stringify(result));  
+          var locationTag = "";
           var loginEnable = locationHierarchy.reduce(function(loginEnable, location){
+            if(location.officer === username && location.key === password)
+            locationTag = location.tag;
             loginEnable = loginEnable || (location.officer === username && location.key === password);
             return loginEnable
           },false)
-            res.send({"msg": loginEnable === true ? "success" : "error"})
+          res.send({"msg": loginEnable === true ? "success" : "error",
+                    "location" : locationTag
+                  })
         });
     })
   }

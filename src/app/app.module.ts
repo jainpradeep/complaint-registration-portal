@@ -8,7 +8,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgMaterialMultilevelMenuModule } from 'ng-material-multilevel-menu';
 // used to create fake backend
 import { fakeBackendProvider } from './_helpers';
-
+import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { AppComponent }  from './app.component';
 import { routing }        from './app.routing';
 import { ChartModule } from 'angular-highcharts';
@@ -18,6 +18,7 @@ import { HindiDataService, AlertService, AuthenticationService, UserService,Loca
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { FilterPipe} from './home/filter.pipe';
 import { HomeComponent } from './home';
+// import { SmartTableComponent } from './home/smart-table/smart-table.component';
 import { LoginComponent } from './login';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { FileSelectDirective } from 'ng2-file-upload';
@@ -41,6 +42,7 @@ import { NumberDirective } from './numbers-only.directive';
         FormsModule,
         NgbModule.forRoot(),
         NgxPaginationModule,
+        Ng2SmartTableModule,    
         AngularFontAwesomeModule,
         NgMaterialMultilevelMenuModule,
         BrowserAnimationsModule,
@@ -51,6 +53,7 @@ import { NumberDirective } from './numbers-only.directive';
             AppComponent,
             NumberDirective,
             HomeComponent,
+            // SmartTableComponent,
             FilterPipe,
             LoginComponent,
             FileSelectDirective,

@@ -36,6 +36,39 @@ export class LocationService {
                 return res;
             }));
     }
+
+    getLocationUsers(location:any){
+        this.spinner.show()
+        return this.http.post<any>('http://localhost:3006/getLocationUsers', location)
+        .pipe(map(res => {
+            this.spinner.hide();
+                  return res;
+        }));
+    }
+    insertUser(user: any) {
+        this.spinner.show()
+        return this.http.post<any>('http://localhost:3006/insertUser', {user})
+            .pipe(map(res => {
+                this.spinner.hide();
+                return res;
+        }));
+    }
+    editUser(user: any) {
+        this.spinner.show()
+        return this.http.post<any>('http://localhost:3006/editUser', {user})
+            .pipe(map(res => {
+                this.spinner.hide();
+                return res;
+        }));
+    }
+    deleteUser(user: any) {
+        this.spinner.show()
+        return this.http.post<any>('http://localhost:3006/deleteUser', {user})
+            .pipe(map(res => {
+                this.spinner.hide();
+                return res;
+            }));
+    }
     deleteLocation(location: any) {
         this.spinner.show()
         return this.http.post<any>('http://localhost:3006/deleteLocation', {location})

@@ -14,6 +14,10 @@ import 'babel-polyfill'
 })
 
 export class HomeComponent {
+    locationList: any = [];
+
+    
+    currentView = "userView";
     items: any;
     navigationSubscription:any;
     closeResult: string;
@@ -36,10 +40,10 @@ export class HomeComponent {
     toDate: NgbDate;
     clickedItems: any = [];
     locationListFiltered: any = [];
+    settings : any;
     lockedWindow : any;
-    locationList: any = [];
     locationConfig : any = "";
-   
+    locationUsers : any = [];
     selectLocationSubTree: any = this.filteredLocationList[0];
    
     config = {
@@ -75,6 +79,10 @@ export class HomeComponent {
             coordinatorEmail: this.selectLocationSubTree.coordinatorEmail,
             frequency : this.selectLocationSubTree.frequency
         }
+    }
+
+    setCurrentView = function(view:string){
+        this.currentView = view;
     }
 
     searchTree = function(item: any, username: any) {
@@ -148,6 +156,37 @@ export class HomeComponent {
             console.log(loc.tag +  " " + filterLocation);
             return filterLocation;
         });
+        this.settings = {
+            columns: {
+            eid: {
+                title: 'EmployeeID'
+              },
+              viewPermissionRoot: {
+                    title: 'View Permissions',
+                    editor: {
+                         type: 'list',
+                         config: {
+                         selectText: 'Select',
+                            list: this.locationList.map(function(loc:any){
+                                loc.value = loc.tag;
+                                loc.title = loc.tag;
+                                return loc
+                            })       
+                        }
+                }
+            }
+        },
+            add:{
+                confirmCreate:true
+            },
+            edit:{
+                 confirmSave:true
+                },
+            delete :{
+                    confirmDelete: true
+                  }
+    
+          };
         this.initialiseMenu = true;
     }
 
@@ -156,6 +195,7 @@ export class HomeComponent {
         document.body.style.background = 'none';
         this.spinner.show();
         this.getLocationTree();
+        this.getLocationUsers();
     }
 
     getLocationTree(){
@@ -168,6 +208,77 @@ export class HomeComponent {
             error => {})
         }
     
+    getLocationUsers(){
+        var _this = this;
+        this.locationService.getLocationUsers({location : localStorage.getItem('location')}).subscribe(
+            data => {
+               this.locationUsers = data.locationUsers;
+            },
+            error => {})   
+    }
+
+    addUser(event:any) {
+        var data = {"eid" : event.newData.eid,
+                    "location" : localStorage.getItem('location'),
+                    "viewPermissionRoot" : event.newData.viewPermissionRoot
+                    };
+        this.locationService.insertUser(data
+        ).subscribe(
+            data => {
+                event.confirm.resolve(event.newData);
+                this.router.navigate(['']);
+            },
+            error => {
+                if (error.error instanceof Error) {
+                    console.log("Client-side error occured.");
+                } else {
+                    console.log("Server-side error occured.");
+                }
+            });
+      }
+
+      updateUser(event:any) {
+          var data = {"eid" : event.newData.eid,
+                    "location" :  localStorage.getItem('location'),
+                    "viewPermissionRoot" : event.newData.viewPermissionRoot,
+                    "_id" : event.newData._id
+          }
+          this.locationService.editUser(data
+            ).subscribe(
+                data => {
+                    event.confirm.resolve(event.newData);
+                    this.router.navigate(['']);
+                },
+                error => {
+                    if (error.error instanceof Error) {
+                        console.log("Client-side error occured.");
+                    } else {
+                        console.log("Server-side error occured.");
+                    }
+                });
+        }
+    
+        deleteUser(event:any) {
+            var data = {"eid" : event.data.eid,
+                      "location" :  localStorage.getItem('location'),
+                      "viewPermissionRoot" : event.data.viewPermissionRoot,
+                      "_id" : event.data._id
+            }
+            this.locationService.deleteUser(data
+              ).subscribe(
+                  data => {
+                      event.confirm.resolve(event.data);
+                      this.router.navigate(['']);
+                  },
+                  error => {
+                      if (error.error instanceof Error) {
+                          console.log("Client-side error occured.");
+                      } else {
+                          console.log("Server-side error occured.");
+                      }
+                  });
+          }
+
     getUpdatededLocationTree(){
         this.locationService.getLocationHierarchy().subscribe(
             data => {
@@ -214,7 +325,7 @@ export class HomeComponent {
             "tag" : this.newLocation.tag,
             "parent": this.selectedLocationElement.innerText,
             "label": this.newLocation.tag,
-            "officer": "admin" + this.newLocation.tag.trim(),
+            "officer": "admin" + this.newLocation.tag.replace(/ /g,''),
             "key" : "ioc123",
             "faIcon": 'fa fa-sitemap fa-1x'
         }).subscribe(
