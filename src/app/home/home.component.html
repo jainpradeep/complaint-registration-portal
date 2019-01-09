@@ -68,6 +68,7 @@
    </nav>
 </header>
 <ngx-spinner></ngx-spinner>
+
 <div class="wrapper">
    <div id = "myCheck" class="sidenav">
       <ng-material-multilevel-menu (click) = "selectLocation($event.target); " (selectedItem)="selectedItem($event)" [configuration]='config'  [items]='appitems'></ng-material-multilevel-menu>
@@ -92,16 +93,16 @@
                 <h3 class= "font-color">Users</h3>
             </div>
             <div class="container parent">
-                  <ng2-smart-table (deleteConfirm)="deleteUser($event)" (editConfirm)="updateUser($event)" (createConfirm)="addUser($event)" [source]="locationUsers" [settings]="settings"></ng2-smart-table>
+                  <ng2-smart-table (deleteConfirm)="deleteUser($event)" (editConfirm)="updateUser($event)" (createConfirm)="addUser($event)" [source]="locationUsers" [settings]="settingsUsers"></ng2-smart-table>
             </div>
         </div>
         <div class="panel panel-default" *ngIf ="currentView == 'problemView'">
             <div class="panel-heading">
                 <h3 class= "font-color">Problems</h3>
             </div>
-            <!-- <div class="container parent">
-                  <ng2-smart-table (deleteConfirm)="deleteUser($event)" (editConfirm)="updateUser($event)" (createConfirm)="addUser($event)" [source]="locationUsers" [settings]="settings"></ng2-smart-table>
-            </div> -->
+            <div class="container parent">
+                  <ng2-smart-table (deleteConfirm)="deleteProblem($event)" (editConfirm)="updateProblem($event)" (createConfirm)="addProblem($event)" [source]="locationProblem" [settings]="settingsProblem"></ng2-smart-table>
+            </div>
         </div>
       </div>
 </div>

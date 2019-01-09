@@ -1,5 +1,7 @@
 ﻿import { Component,  ChangeDetectorRef} from '@angular/core';
 import { LocationService } from '../_services';
+import { userService } from '../_services';
+import { problemService } from '../_services';
 import { NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import { AuthenticationService } from '../_services';
 import { HindiDataService}  from '../_services';
@@ -10,7 +12,7 @@ import 'babel-polyfill'
 @Component({
     templateUrl: 'home.component.html',
     styleUrls: ['home.component.css'],
-    providers: [HindiDataService],
+    providers: [],
 })
 
 export class HomeComponent {
@@ -40,10 +42,12 @@ export class HomeComponent {
     toDate: NgbDate;
     clickedItems: any = [];
     locationListFiltered: any = [];
-    settings : any;
+    settingsUsers : any;
+    settingsProblem : any;
     lockedWindow : any;
     locationConfig : any = "";
     locationUsers : any = [];
+    locationProblem : any = [];
     selectLocationSubTree: any = this.filteredLocationList[0];
    
     config = {
@@ -156,7 +160,7 @@ export class HomeComponent {
             console.log(loc.tag +  " " + filterLocation);
             return filterLocation;
         });
-        this.settings = {
+        this.settingsUsers = {
             columns: {
             eid: {
                 title: 'EmployeeID'
@@ -187,15 +191,68 @@ export class HomeComponent {
                   }
     
           };
+
+          this.settingsProblem = {
+            columns: {
+              problem: {
+                title: 'Problem'
+              },
+              description: {
+                title: 'Description'
+              },
+              priority: {
+                title: 'Priority',
+                editor: {
+                    type: 'list',
+                    config: {
+                    selectText: 'Select',
+                       list: [
+                        {value: 'High', title: 'High'},
+                        {value: 'Medium', title: 'Medium'},
+                        {value: 'Low', title: 'Low'},
+                      ]    
+                   }
+           }
+              },
+              siteEngineer: {
+                title: 'Site engineer'
+              },
+              engineerInCharge: {
+                title: 'Engineer In Charge'
+              },
+              hod: {
+                title: 'HOD'
+              },
+              workOrderNo: {
+                title: 'Work Order No'
+              },
+              workOrderDetails: {
+                title: 'Work Order Details'
+              }
+            
+        },
+            add:{
+                confirmCreate:true
+            },
+            edit:{
+                 confirmSave:true
+                },
+            delete :{
+                    confirmDelete: true
+                  }
+    
+          };
+
         this.initialiseMenu = true;
     }
 
     
-    constructor(private chRef: ChangeDetectorRef, private modalService: NgbModal, private AuthenticationService: AuthenticationService, private HindiDataService: HindiDataService, calendar: NgbCalendar, private locationService: LocationService,private router: Router, private spinner: NgxSpinnerService) {
+    constructor(private chRef: ChangeDetectorRef, private modalService: NgbModal, private AuthenticationService: AuthenticationService, private HindiDataService: HindiDataService, calendar: NgbCalendar, private userService: userService,private locationService: LocationService,private problemService: problemService,private router: Router, private spinner: NgxSpinnerService) {
         document.body.style.background = 'none';
         this.spinner.show();
         this.getLocationTree();
         this.getLocationUsers();
+        this.getLocationProblem();
     }
 
     getLocationTree(){
@@ -210,19 +267,27 @@ export class HomeComponent {
     
     getLocationUsers(){
         var _this = this;
-        this.locationService.getLocationUsers({location : localStorage.getItem('location')}).subscribe(
+        this.userService.getLocationUsers({location : localStorage.getItem('location')}).subscribe(
             data => {
                this.locationUsers = data.locationUsers;
+            },
+            error => {})   
+    }
+    getLocationProblem(){
+        var _this = this;
+        this.problemService.getLocationProblem({location : localStorage.getItem('location')}).subscribe(
+            data => {
+               this.locationProblem = data.locationProblem;
             },
             error => {})   
     }
 
     addUser(event:any) {
         var data = {"eid" : event.newData.eid,
-                    "location" : localStorage.getItem('location'),
-                    "viewPermissionRoot" : event.newData.viewPermissionRoot
+        "location" : localStorage.getItem('location'),
+        "viewPermissionRoot" : event.newData.viewPermissionRoot
                     };
-        this.locationService.insertUser(data
+        this.userService.insertUser(data
         ).subscribe(
             data => {
                 event.confirm.resolve(event.newData);
@@ -237,13 +302,40 @@ export class HomeComponent {
             });
       }
 
+      addProblem(event:any) {
+        var data = {"eid" : localStorage.getItem('username'),
+                    "problem" : event.newData.problem,
+                    "description" : event.newData.description,
+                    "priority" : event.newData.priority,
+                    "siteEngineer" : event.newData.siteEngineer,
+                    "engineerInCharge" : event.newData.engineerInCharge,
+                    "hod" : event.newData.hod,
+                    "workOrderNo" : event.newData.workOrderNo,
+                    "workOrderDetails" : event.newData.workOrderDetails,
+                    "location" : localStorage.getItem('location')};
+        this.problemService.insertProblem(data
+        ).subscribe(
+            data => {
+                event.confirm.resolve(event.newData);
+                this.router.navigate(['']);
+            },
+            error => {
+                if (error.error instanceof Error) {
+                    console.log("Client-side error occured.");
+                } else {
+                    console.log("Server-side error occured.");
+                }
+            });
+      }
+
+
       updateUser(event:any) {
           var data = {"eid" : event.newData.eid,
                     "location" :  localStorage.getItem('location'),
                     "viewPermissionRoot" : event.newData.viewPermissionRoot,
                     "_id" : event.newData._id
           }
-          this.locationService.editUser(data
+          this.userService.editUser(data
             ).subscribe(
                 data => {
                     event.confirm.resolve(event.newData);
@@ -257,6 +349,33 @@ export class HomeComponent {
                     }
                 });
         }
+        updateProblem(event:any) {
+            var data = {"eid" : localStorage.getItem('username'),
+            "problem" : event.newData.problem,
+            "description" : event.newData.description,
+            "priority" : event.newData.priority,
+            "siteEngineer" : event.newData.siteEngineer,
+            "engineerInCharge" : event.newData.engineerInCharge,
+            "hod" : event.newData.hod,
+            "workOrderNo" : event.newData.workOrderNo,
+            "workOrderDetails" : event.newData.workOrderDetails,
+            "location" : localStorage.getItem('location'),
+                      "_id" : event.newData._id
+            }
+            this.problemService.editProblem(data
+              ).subscribe(
+                  data => {
+                      event.confirm.resolve(event.newData);
+                      this.router.navigate(['']);
+                  },
+                  error => {
+                      if (error.error instanceof Error) {
+                          console.log("Client-side error occured.");
+                      } else {
+                          console.log("Server-side error occured.");
+                      }
+                  });
+          }
     
         deleteUser(event:any) {
             var data = {"eid" : event.data.eid,
@@ -264,7 +383,7 @@ export class HomeComponent {
                       "viewPermissionRoot" : event.data.viewPermissionRoot,
                       "_id" : event.data._id
             }
-            this.locationService.deleteUser(data
+            this.userService.deleteUser(data
               ).subscribe(
                   data => {
                       event.confirm.resolve(event.data);
@@ -278,7 +397,33 @@ export class HomeComponent {
                       }
                   });
           }
-
+          deleteProblem(event:any) {
+            var data = {"eid" : localStorage.getItem('username'),
+            "problem" : event.data.problem,
+            "description" : event.data.description,
+            "priority" : event.data.priority,
+            "siteEngineer" : event.data.siteEngineer,
+            "engineerInCharge" : event.data.engineerInCharge,
+            "hod" : event.data.hod,
+            "workOrderNo" : event.data.workOrderNo,
+            "workOrderDetails" : event.data.workOrderDetails,
+            "location" : localStorage.getItem('location'),
+                      "_id" : event.data._id
+            }
+            this.problemService.deleteProblem(data
+              ).subscribe(
+                  data => {
+                      event.confirm.resolve(event.data);
+                      this.router.navigate(['']);
+                  },
+                  error => {
+                      if (error.error instanceof Error) {
+                          console.log("Client-side error occured.");
+                      } else {
+                          console.log("Server-side error occured.");
+                      }
+                  });
+          }
     getUpdatededLocationTree(){
         this.locationService.getLocationHierarchy().subscribe(
             data => {

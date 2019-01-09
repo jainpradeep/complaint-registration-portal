@@ -14,7 +14,7 @@ import { routing }        from './app.routing';
 import { ChartModule } from 'angular-highcharts';
 import { AuthGuard } from './_guards';
 import { JwtInterceptor } from './_helpers';
-import { HindiDataService, AlertService, AuthenticationService, UserService,LocationService, } from './_services';
+import { HindiDataService, AlertService, AuthenticationService, userService,problemService,LocationService, } from './_services';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { FilterPipe} from './home/filter.pipe';
 import { HomeComponent } from './home';
@@ -29,7 +29,8 @@ import { AngularFontAwesomeModule } from 'angular-font-awesome';
 import {Routes, RouterModule } from '@angular/router';
 import { appRoutes } from './app.routing';
 import { WindowScrolling } from "./_services";
-import { NumberDirective } from './numbers-only.directive';
+import { NumberDirective } from './numbers-only.directive';;
+import { UserComponent } from './user/user.component'
 
 @NgModule({
     imports: [
@@ -58,7 +59,8 @@ import { NumberDirective } from './numbers-only.directive';
             LoginComponent,
             FileSelectDirective,
             MyFilterPipe
-        ],
+,
+            UserComponent        ],
         providers: [
             AuthGuard,
             HindiDataService,
@@ -66,7 +68,8 @@ import { NumberDirective } from './numbers-only.directive';
             AuthenticationService,
             WindowScrolling,
             LocationService,
-            UserService,
+            userService,
+            problemService,
             {
                 provide: HTTP_INTERCEPTORS,
                 useClass: JwtInterceptor,

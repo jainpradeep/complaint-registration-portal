@@ -50,7 +50,8 @@ export class LoginComponent implements OnInit {
                 data => {
                     if(data.msg == "success"){
                         this.loginError = false;
-                        this.router.navigate([this.returnUrl]);
+                        this.router.navigate([data.type === "admin" ? "" : "user"]);
+//                        this.router.navigate([this.returnUrl]);
                         document.body.style.background = 'none';
                     }
                     else
