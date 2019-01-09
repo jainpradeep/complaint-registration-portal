@@ -112,7 +112,7 @@ function transformToTree(arr){
   app.route('/editUser')  
   .post(function (req, res) {
     MongoClient.connect("mongodb://localhost:27017/users", { useNewUrlParser: true },function(err, database) {
-        if (err) return
+        if (err) returns
         var editedUser = {$set: { eid: req.body.user.eid, location: req.body.user.location, viewPermissionRoot: req.body.user.viewPermissionRoot}};
         req.body.user._id = new ObjectID.createFromHexString(req.body.user._id.toString());
             database.db('complaintRegPortal').collection('users').updateOne({"_id": req.body.user._id}, editedUser, function (er, result) {
@@ -280,6 +280,7 @@ app.route('/authenticate')
     .post(function (req, res) {
           MongoClient.connect("mongodb://127.0.0.1:27017/hindiDB",{ useNewUrlParser: true } ,function(er,database){     
               database.db('complaintRegPortal').collection('locationHierarchy').find({}).toArray(function(err, result) {
+                console.log(err);
                 if (err) throw err;
                 database.close();
                 ldapAuthenticate(req.body.username,req.body.password, res) 
@@ -319,9 +320,6 @@ app.route('/authenticate')
           })
           }
           config.ad.authenticate("IOC\\" + username, password, function(err, auth) {
-            console.log(username)
-            console.log(password)
-        
             if (auth && !err) {
                   res.send({"msg": "success",
                           "type":  "user",
@@ -335,6 +333,17 @@ app.route('/authenticate')
             });
         });
     })
+    config.ad.authenticate("IOC\\" + username, password, function(err, auth) {
+      console.log(err)
+      if (auth && !err) {
+          res.send({"msg": "success",
+          });
+        }
+        else{
+          res.send({"msg": "error",
+        })
+      }
+    });
   }
 }
 app.use('/', router);
