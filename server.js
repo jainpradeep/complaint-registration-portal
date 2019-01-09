@@ -211,6 +211,7 @@ app.route('/authenticate')
     .post(function (req, res) {
           MongoClient.connect("mongodb://127.0.0.1:27017/hindiDB",{ useNewUrlParser: true } ,function(er,database){     
               database.db('complaintRegPortal').collection('locationHierarchy').find({}).toArray(function(err, result) {
+                console.log(err);
                 if (err) throw err;
                 database.close();
                 ldapAuthenticate(req.body.username,req.body.password, res) 
@@ -240,6 +241,7 @@ app.route('/authenticate')
   }
   else {
     config.ad.authenticate("IOC\\" + username, password, function(err, auth) {
+      console.log(err)
       if (auth && !err) {
           res.send({"msg": "success",
           });
