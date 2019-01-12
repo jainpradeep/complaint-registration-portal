@@ -128,13 +128,34 @@ body {
     font-size: 12px;
     color: #777;
   }
-  
-  .btn-google {
+
+  .btn-custom {
     color: white;
-    background-color: #ea4335;
+    background-color:#0A8A8A ;
+    border-color: #006262;
+  }
+  .btn-custom:hover,
+  .btn-custom:focus,
+  .btn-custom:active,
+  .btn-custom.active {
+    color: white;
+    background-color: #0A8A8A;
+    border-color: #006262;
+  }
+  .btn-custom.disabled:hover,
+  .btn-custom.disabled:focus,
+  .btn-custom.disabled:active,
+  .btn-custom.disabled.active,
+  .btn-custom[disabled]:hover,
+  .btn-custom[disabled]:focus,
+  .btn-custom[disabled]:active,
+  .btn-custom[disabled].active,
+  fieldset[disabled] .btn-custom:hover,
+  fieldset[disabled] .btn-custom:focus,
+  fieldset[disabled] .btn-custom:active,
+  fieldset[disabled] .btn-custom.active {
+    color: white;
+    background-color: #0A8A8A;
+    border-color: #006262;
   }
   
-  .btn-facebook {
-    color: white;
-    background-color: #3b5998;
-  }

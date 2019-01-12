@@ -31,6 +31,7 @@ import { appRoutes } from './app.routing';
 import { WindowScrolling } from "./_services";
 import { NumberDirective } from './numbers-only.directive';;
 import { UserComponent } from './user/user.component'
+import { complaintService } from './_services';
 
 @NgModule({
     imports: [
@@ -69,6 +70,7 @@ import { UserComponent } from './user/user.component'
             WindowScrolling,
             LocationService,
             userService,
+            complaintService,
             problemService,
             {
                 provide: HTTP_INTERCEPTORS,

@@ -1,3 +1,109 @@
-<p>
-  user works!
-</p>
+<ngx-spinner style="position: fixed !important;"></ngx-spinner>
+<header>
+   <nav style ="background-color:#006262" class="navbar navbar-expand-md navbar-custom fixed-top overrides">
+      <a class="navbar-brand" href="#">Complaint Registration Portal</a>
+      <button class="navbar-toggler" type="butto   n" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+      <span  class="navbar-toggler-icon"></span>
+      </button> 
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <a class="btn btn-default" (click) = "open(content)" aria-label="Settings">
+            <i class="fa fa-plus" style="color:#fff;" aria-hidden="true"></i>
+            </a>
+            <a class="btn btn-default" (click) = "open(delete)" aria-label="delete">
+            <i class="fa fa-trash" style="color:#fff;" aria-hidden="true"></i>
+            </a>
+            <!-- <a class="btn btn-default" (click) = "open(edit);initEditLocation()" aria-label="delete">
+               <i class="fa fa-edit" style="color:#fff;" aria-hidden="true"></i>
+               </a> -->
+            <ul class="navbar-nav mr-auto">
+               <!-- <li class="nav-item active">
+                  <a class="nav-link" href="#">
+                  मुख पृष्ठ <span class="sr-only"></span></a>
+                  </li> -->
+               <li class="nav-item">
+                  <!-- <a class="nav-link" href="#">संपर्क</a> -->
+               </li>
+            </ul>
+            <form class="form-inline mt-2 mt-md-0">
+               <!-- <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="खोजे"> -->
+               <button class="btn btn-custom my-2 my-sm-0" (click)="logOut()" type="submit"><font color="white">लोग आउट</font>  </button>
+            </form>
+         </div>
+        <div class="btn-group">
+            <!-- <button type="button" class="btn btn-secondary">Settings</button>
+            <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown">
+            </button> -->
+            <!-- <div class="dropdown-menu">
+                <a class="dropdown-item" (click) = "open(content)" aria-label="Settings"Add location>
+                    <i class="fa fa-plus" style="color:#0000;" aria-hidden="true"></i> 
+                    </a>
+                    <a class="dropdown-item" (click) = "open(delete)" aria-label="delete">Delete Location
+                    <i class="fa fa-trash" style="color:#0000;" aria-hidden="true"></i>
+                    </a>
+                    <a class="dropdown-item" (click) = "open(edit);initEditLocation()" aria-label="delete">>Edit Location
+                       <i class="fa fa-edit" style="color:#0000;" aria-hidden="true"></i>
+                       </a>
+           
+            </div> -->
+          </div>
+         <ul class="navbar-nav mr-auto">
+            <!-- <li class="nav-item active">
+               <a class="nav-link" href="#">
+               मुख पृष्ठ <span class="sr-only"></span></a>
+               </li> -->
+            <li class="nav-item">
+               <!-- <a class="nav-link" href="#">संपर्क</a> -->
+            </li>
+         </ul>
+         <!-- <form class="form-inline mt-2 mt-md-0">
+            <button class="btn btn-outline-success my-2 my-sm-0" (click)="logOut()" type="submit"> लोग आउट </button>
+         </form> -->
+      </div>
+   </nav>
+</header>
+<ngx-spinner></ngx-spinner>
+
+<div class="wrapper">
+   <div id = "myCheck" class="sidenav">
+      <ng-material-multilevel-menu (click) = "selectLocation($event.target); " (selectedItem)="selectedItem($event)" [configuration]='config'  [items]='appitems'>
+      </ng-material-multilevel-menu>
+   </div>
+</div>
+
+<div class="container content">  
+   <div class="row">
+      <div class="col-md-12">
+         <div class="panel panel-default" *ngIf ="currentView == 'complaintView'">
+            <div class="panel-heading">
+                <h3 class= "font-color">Complaint View</h3>
+            </div>
+            <div class="container parent">
+               <ng2-smart-table (deleteConfirm)="deleteComplaint($event)" (editConfirm)="updateComplaint($event)" (createConfirm)="addComplaint($event)" [source]="userComplaints" [settings]="settingsComplaint"></ng2-smart-table>
+            </div>
+        </div>
+        <div class="panel panel-default" *ngIf ="currentView == 'inchargeView'">
+            <div class="panel-heading">
+                <h3 class= "font-color">Incharge View</h3>
+            </div>
+            <div class="container parent">
+                  <ng2-smart-table (editConfirm)="updateProblem($event)" [source]="locationInchargeComplaints" [settings]="settingsIncharge"></ng2-smart-table>
+            </div>
+        </div>
+        <div class="panel panel-default" *ngIf ="currentView == 'viewerView'">
+            <div class="panel-heading">
+                <h3 class= "font-color">View Permission</h3>
+            </div>
+
+        </div>        
+        <div class="panel panel-default" *ngIf ="currentView == 'blankView'">
+         <div class="panel-heading">
+             <h3 class= "font-color">Incharge</h3>
+         </div>
+        
+     </div>
+
+        
+      </div>
+</div>
+</div>

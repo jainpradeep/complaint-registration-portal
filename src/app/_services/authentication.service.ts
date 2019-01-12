@@ -22,6 +22,7 @@ export class AuthenticationService {
                 localStorage.setItem('currentUser', JSON.stringify(res.msg));
                 localStorage.setItem('username', username);
                 localStorage.setItem('location', res.location);
+                localStorage.setItem('viewPermissionRoot', res.viewPermissionRoot);
                 this.userName  = username
             } 
             return res;

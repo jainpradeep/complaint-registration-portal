@@ -47,7 +47,7 @@
 		z-index: 1;
 		top: 0;
 		left: 0;
-		background-color: #212529;
+		background-color: #006262;
 		overflow-x: scroll;
 		padding-top:40px;
 }
@@ -146,7 +146,7 @@ th.rotate {
       width: 2rem;
     }
     .custom-day.focused {
-      background-color: #e6e6e6;
+      background-color: #6c1616;
     }
     .custom-day.range, .custom-day:hover {
       background-color: rgb(2, 117, 216);
@@ -162,15 +162,15 @@ th.rotate {
 }
 
 .btn-custom {
-  background-color:#630279 ;
-  border-color: rgb(94,45,121);
+  background-color:#0A8A8A ;
+  border-color: #006262;
 }
 .btn-custom:hover,
 .btn-custom:focus,
 .btn-custom:active,
 .btn-custom.active {
-  background-color: #4a015a;
-  border-color: #34023f;
+  background-color: #0A8A8A;
+  border-color: #006262;
 }
 .btn-custom.disabled:hover,
 .btn-custom.disabled:focus,
@@ -184,8 +184,8 @@ fieldset[disabled] .btn-custom:hover,
 fieldset[disabled] .btn-custom:focus,
 fieldset[disabled] .btn-custom:active,
 fieldset[disabled] .btn-custom.active {
-  background-color: #8701a5;
-  border-color: #4f0061;
+  background-color: #0A8A8A;
+  border-color: #006262;
 }
 
 .navbar-custom {
@@ -267,6 +267,6 @@ fieldset[disabled] .btn-custom.active {
 } 
 
 .font-color {
-  color: rgb(90, 25, 151);
+  color: black
   font-weight:bold;
 }

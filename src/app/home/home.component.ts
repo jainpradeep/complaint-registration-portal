@@ -52,11 +52,11 @@ export class HomeComponent {
    
     config = {
         paddingAtStart: true,
-        listBackgroundColor: `rgb(94,45,121)`,
+        listBackgroundColor: `rgb(0, 128, 128)`,
         fontColor: `rgb(255,255,255)`,
-        backgroundColor: `rgb(94,45,121)`,
+        backgroundColor: `rgb(0, 128, 128)`,
         highlightOnSelect: true,
-        selectedListFontColor: `purple`,
+        selectedListFontColor: `teal`,
         interfaceWithRoute: false,
         collapseOnSelect: true
     };

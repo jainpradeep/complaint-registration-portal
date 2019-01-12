@@ -23,33 +23,11 @@ let storage = multer.diskStorage({
   }
 });
 let upload = multer({storage: storage});
-
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
-
-// var rule = new schedule.RecurrenceRule();
-// rule.dayOfWeek = [0, new schedule.Range(4, 6)];
-// rule.hour = 13;
-// rule.minute =16 ;
-
-// function sendEmail(location){
-//   (async () => {
-//     console.log("test email")
-//         emailConfig.server.send({
-//           text:   "आदरणीय महोदय/महोदया, "  + "\n" + "\n" + "आपकी जानकारी एवं आगामी कार्रवाई हेतु " + location.tag + " की"  + " दिनांक " + moment(new Date(location.fromDate)).format("DD/MM/YYYY") + " से " + moment(new Date(location.toDate)).format("DD/MM/YYYY") + " तक की हिन्दी पत्रचार रिपोर्ट पत्राचार रिपोर्ट एप्लिकेशन मे दर्ज कर दी गई है। " + " \n " + " \n" + "सादर, " + "\n" +"हिंदी एडमिन", 
-//           from:    "nrplisadmin@indianoil.in", 
-//           to:     location.officerEmail,
-//           cc:      [location.coordinatorEmail],
-//           subject: "पत्राचार रिपोर्ट एप्लिकेशन"
-//         }, function(err, message) { 
-//           console.log(message)
-//         })
-//       })().catch(err => {
-//   });
-// }
 
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
@@ -157,6 +135,21 @@ function transformToTree(arr){
   }); 
   
 
+  app.route('/insertComplaint')  
+  .post(function (req, res) {
+    MongoClient.connect("mongodb://localhost:27017/complaintRegPortal", { useNewUrlParser: true },function(err, database) {
+      console.log(err);  
+        if (err) return
+        database.db('complaintRegPortal').collection('complaints').insertOne(req.body.complaint, function(err, records) {
+            if (err) throw err;
+                res.send(
+                    (err === null) ? {msg: "success"} : {msg: err}
+                );
+              });
+        })
+  }); 
+  
+
   app.route('/editProblem')  
   .post(function (req, res) {
     MongoClient.connect("mongodb://localhost:27017/complaintRegPortal", { useNewUrlParser: true },function(err, database) {
@@ -228,6 +221,31 @@ function transformToTree(arr){
       })
   });  
 
+  app.route('/editComplaint')  
+  .post(function (req, res) {
+    MongoClient.connect("mongodb://localhost:27017/editLocation", { useNewUrlParser: true },function(err, database) {
+        if (err) return
+        var editedComplaint = 
+        { $set: { problem: req.body.complaint.problem, 
+            description: req.body.complaint.description, 
+          officerEmail: req.body.complaint.officerEmail, 
+          priority: req.body.complaint.priority, 
+          status : req.body.complaint.status,
+          history: req.body.complaint.history, 
+          remarks : req.body.complaint.remarks,
+          _id : new ObjectID.createFromHexString(req.body.complaint._id.toString())}};
+          
+          console.log(editedComplaint);
+          database.db('complaintRegPortal').collection("complaints").updateOne({_id: new ObjectID.createFromHexString(req.body.complaint._id.toString())}, editedComplaint, function(er, result) {
+            if (er) throw er;
+            console.log(result);
+            res.send(
+              (er === null) ? {msg: "success", data:result} : {msg: err}
+          );
+           database.close();
+          });
+      })
+  });  
 
   app.route('/getLocationHierarchy')  
   .post(function (req, res) {
@@ -246,6 +264,41 @@ function transformToTree(arr){
           });
       })
   });  
+
+  app.route('/getUserComplaint')  
+  .post(function (req, res) {
+    MongoClient.connect("mongodb://localhost:27017/complaintRegPortal", { useNewUrlParser: true },function(err, database) {
+        if (err) return
+          console.log(req.body)
+          database.db('complaintRegPortal').collection('complaints').find({eid: req.body.user}).toArray(function(err, result) {
+            if (err) throw err;
+            var data = JSON.parse(JSON.stringify(result));  
+            res.send({"msg" : "success",
+              "complaints" : data,
+            })
+            database.close();
+          });
+      })
+  });  
+
+  app.route('/getLocationComplaint')  
+  .post(function (req, res) {
+    MongoClient.connect("mongodb://localhost:27017/complaintRegPortal", { useNewUrlParser: true },function(err, database) {
+        if (err) return
+          console.log(req.body)
+          database.db('complaintRegPortal').collection('complaints').find({location: req.body.location}).toArray(function(err, result) {
+            if (err) throw err;
+            var data = JSON.parse(JSON.stringify(result));  
+            res.send({"msg" : "success",
+              "complaints" : data,
+            })
+            database.close();
+          });
+      })
+  });  
+
+
+  
 
   app.route('/getLocationUsers')  
   .post(function (req, res) {
@@ -305,7 +358,8 @@ app.route('/authenticate')
           },false)
           res.send({"msg": loginEnable === true ? "success" : "error",
                     "location" : locationTag,
-                    "type":  "admmin"
+                    "type":  "admin",
+                    "viewPermissionRoot":null,
                   })
         });
     })
@@ -319,31 +373,23 @@ app.route('/authenticate')
             res.send({"msg": "error",
           })
           }
-          config.ad.authenticate("IOC\\" + username, password, function(err, auth) {
-            if (auth && !err) {
-                  res.send({"msg": "success",
-                          "type":  "user",
-                          "user": result
-                  });
+          else {
+            config.ad.authenticate("IOC\\" + username, password, function(err, auth) {
+              if (auth && !err) {
+                    res.send({"msg": "success",
+                            "location":result.location,
+                            "viewPermissionRoot":result.viewPermissionRoot,
+                            "type":  "user"
+                    });
+                  }
+                  else{
+                    res.send({"msg": "error",
+                  })
                 }
-                else{
-                  res.send({"msg": "error",
-                })
-              }
-            });
+              }); 
+          }
         });
     })
-    config.ad.authenticate("IOC\\" + username, password, function(err, auth) {
-      console.log(err)
-      if (auth && !err) {
-          res.send({"msg": "success",
-          });
-        }
-        else{
-          res.send({"msg": "error",
-        })
-      }
-    });
   }
 }
 app.use('/', router);
