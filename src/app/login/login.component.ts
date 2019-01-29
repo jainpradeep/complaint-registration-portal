@@ -20,8 +20,9 @@ export class LoginComponent implements OnInit {
         private authenticationService: AuthenticationService,
         private locationService : LocationService,
         private alertService: AlertService) {
-            document.body.style.background = 'hdb3.jpg';
-        }
+            // document.body.style.background = 'Help-Desk-Support.jpg';
+            // document.body.style.backgroundSize = 'cover';
+            }
 
     ngOnInit() {
         this.loginForm = this.formBuilder.group({

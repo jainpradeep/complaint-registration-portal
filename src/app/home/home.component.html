@@ -1,11 +1,16 @@
-﻿<ngx-spinner style="position: fixed !important;"></ngx-spinner>
+﻿<ngx-spinner
+bdColor = "rgb(59,153,186,0.8)"
+size = "large"
+color = "#fff"
+type = "timer"
+></ngx-spinner>
 <header>
    <a class="btn btn-default" aria-label="Settings">
       <i class="fa fa-plus fa-2x" aria-hidden="true"></i>
       <h5>Raise Complaint</h5>
    </a>
 
-   <nav style ="background-color:#006262" class="navbar navbar-expand-md navbar-custom fixed-top overrides">
+   <nav style ="background-color:#3488A5" class="navbar navbar-expand-md navbar-custom fixed-top overrides">
       <a class="navbar-brand" href="#">Complaint Registration Portal</a>
       <button class="navbar-toggler" type="butto   n" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
       <span  class="navbar-toggler-icon"></span>
@@ -32,7 +37,7 @@
             </ul>
             <form class="form-inline mt-2 mt-md-0">
                <!-- <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="खोजे"> -->
-               <button class="btn btn-custom my-2 my-sm-0" (click)="logOut()" type="submit"><font color="white">लोग आउट</font>  </button>
+               <button class="btn btn-custom my-2 my-sm-0" (click)="logOut()" type="submit"><font color="white">Logout</font>  </button>
             </form>
          </div>
         <div class="btn-group">
@@ -67,7 +72,7 @@
       </div>
    </nav>
 </header>
-<ngx-spinner></ngx-spinner>
+
 
 <div class="wrapper">
    <div id = "myCheck" class="sidenav">
@@ -75,41 +80,55 @@
    </div>
 </div>
 
-<div class="container contentHead">
-   <div class="row">
-      <div class="col-md-12">
-         <div class="row">
-            <button class="btn btn-custom my-2 my-sm-0 offset-xs-1" (click)="setCurrentView('userView')"><font color="white">Users</font> </button>
-            <button class="btn btn-custom my-2 my-sm-0" (click)="setCurrentView('problemView')"><font color="white">Problems</font> </button>
-         </div>
-      </div>
-   </div>
-</div>
+
 
 <div class="container contentHead">
       <div class="row">
-        <div class="panel panel-default" *ngIf ="currentView == 'userView'">
-            <div class="panel-heading">
-                <h3 class= "font-color">Users</h3>
-            </div>
-            <div class="container parent">
-                  <ng2-smart-table (deleteConfirm)="deleteUser($event)" (editConfirm)="updateUser($event)" (createConfirm)="addUser($event)" [source]="locationUsers" [settings]="settingsUsers"></ng2-smart-table>
-            </div>
-        </div>
-        <div class="panel panel-default" *ngIf ="currentView == 'problemView'">
-            <div class="panel-heading">
-                <h3 class= "font-color">Problems</h3>
-            </div>
-            <div class="container parent">
-                  <ng2-smart-table (deleteConfirm)="deleteProblem($event)" (editConfirm)="updateProblem($event)" (createConfirm)="addProblem($event)" [source]="locationProblem" [settings]="settingsProblem"></ng2-smart-table>
-            </div>
-        </div>
+         <div class="panel panel-default" *ngIf ="treeView == 'BlankView'">
+               <div class="panel-heading">
+                     <div class="container content" style = "height: 600px"> 
+                             <img src="/zeroState.png" alt="zeroState" style="width:700px;height:500px">
+                             </div>
+                 </div>
+              </div>
+
+              <div *ngIf ="treeView == 'NormalView'">
+                  <div style="margin-left: 0px" class="container contentHead">
+                        <div class="row">
+                           <div class="col-md-12">
+                              <div class="row">
+                                 <button class="btn btn-custom my-2 my-sm-0 offset-xs-1" (click)="setCurrentView('userView')"><font color="white">Users</font> </button>
+                                 <button style="margin-left:10px" class="btn btn-custom my-2 my-sm-0 offset-xs-1" (click)="setCurrentView('problemView')"><font color="white">Problems</font> </button>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  <div class="panel panel-default" *ngIf ="currentView == 'userView'">
+                        <div class="panel-heading"><br>
+                            <h3  style="color: #3488A5" class= "font-color">Users</h3>
+                        </div>
+                        <div class="container parent"><br>
+                              <ng2-smart-table (deleteConfirm)="deleteUser($event)" (editConfirm)="updateUser($event)" (createConfirm)="addUser($event)" [source]="locationUsers" [settings]="settingsUsers"></ng2-smart-table>
+                        </div>
+                    </div>
+                    <div class="panel panel-default" *ngIf ="currentView == 'problemView'">
+                        <div class="panel-heading"><br>
+                            <h3  style="color: #3488A5" class= "font-color">Problems</h3>
+                        </div>
+                        <div class="container parent"><br>
+                              <ng2-smart-table (deleteConfirm)="deleteProblem($event)" (editConfirm)="updateProblem($event)" (createConfirm)="addProblem($event)" [source]="locationProblem" [settings]="settingsProblem"></ng2-smart-table>
+                        </div>
+                    </div>
+              </div>      
+
       </div>
 </div>
 
+
+
 <ng-template #content let-c="close" let-d="dismiss">
    <div class="modal-header">
-      <h4 class="modal-title" id="modal-basic-title">Add Location</h4>
+      <h4 class="modal-title" id="modal-basic-title">Add Location under {{currentLocation.tag}}</h4>
       <button type="button" class="close" aria-label="Close" (click)="d('Cross click');">
          <span aria-hidden="true">&times;</span>
       </button>
@@ -130,7 +149,7 @@
 </ng-template>
 <ng-template #delete let-c="close" let-d="dismiss">
    <div class="modal-header">
-      <h4 class="modal-title" id="modal-basic-title">लोकेशन डिलीट करे</h4>
+      <h4 class="modal-title" id="modal-basic-title">Location Deletion from {{currentLocation.tag}}</h4>
       <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
       <span aria-hidden="true">&times;</span>
       </button>

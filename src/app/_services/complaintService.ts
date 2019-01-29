@@ -12,7 +12,16 @@ export class complaintService {
 
     getLocationComplaint(location:any){
         this.spinner.show()
-        return this.http.post<any>('http://localhost:3006/getLocationComplaint', location)
+        return this.http.post<any>('http://10.14.151.91:3006/getLocationComplaint', location)
+        .pipe(map(res => {
+            this.spinner.hide();
+                  return res;
+        }));
+    }
+
+    getLocationProblemComplaints(data:any){
+        this.spinner.show()
+        return this.http.post<any>('http://10.14.151.91:3006/getLocationProblemComplaint', data)
         .pipe(map(res => {
             this.spinner.hide();
                   return res;
@@ -22,7 +31,7 @@ export class complaintService {
     
     getUserComplaint(user:any){
         this.spinner.show()
-        return this.http.post<any>('http://localhost:3006/getUserComplaint', user)
+        return this.http.post<any>('http://10.14.151.91:3006/getUserComplaint', user)
         .pipe(map(res => {
             this.spinner.hide();
                   return res;
@@ -31,7 +40,7 @@ export class complaintService {
 
     insertComplaint(complaint: any) {
         this.spinner.show()
-        return this.http.post<any>('http://localhost:3006/insertComplaint', {complaint})
+        return this.http.post<any>('http://10.14.151.91:3006/insertComplaint', {complaint})
             .pipe(map(res => {
                 this.spinner.hide();
                 return res;
@@ -39,15 +48,7 @@ export class complaintService {
     }
     editComplaint(complaint: any) {
         this.spinner.show()
-        return this.http.post<any>('http://localhost:3006/editComplaint', {complaint})
-            .pipe(map(res => {
-                this.spinner.hide();
-                return res;
-        }));
-    }
-    editIncharge(complaint: any) {
-        this.spinner.show()
-        return this.http.post<any>('http://localhost:3006/editIncharge', {complaint})
+        return this.http.post<any>('http://10.14.151.91:3006/editComplaint', {complaint})
             .pipe(map(res => {
                 this.spinner.hide();
                 return res;
@@ -55,7 +56,7 @@ export class complaintService {
     }
     deleteComplaint(complaint: any) {
         this.spinner.show()
-        return this.http.post<any>('http://localhost:3006/deleteComplaint', {complaint})
+        return this.http.post<any>('http://10.14.151.91:3006/deleteComplaints', {complaint})
             .pipe(map(res => {
                 this.spinner.hide();
                 return res;

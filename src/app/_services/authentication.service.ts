@@ -14,7 +14,7 @@ export class AuthenticationService {
     }
     login(username: string, password: string) {
         this.spinner.show();
-        return this.http.post<any>('http://localhost:3006/authenticate', { username: username, password: password })
+        return this.http.post<any>('http://10.14.151.91:3006/authenticate', { username: username, password: password })
         .pipe(map(res => {
             this.spinner.hide();
             if (res.msg == "success") {
@@ -32,10 +32,9 @@ export class AuthenticationService {
     logout() {
         // remove user from local storage to log user out
         localStorage.removeItem('currentUser');
-        this.renderer.setStyle(document.body, 'background-image', "url('hdb3.jpg')");
+        this.renderer.setStyle(document.body, 'background-image', "url('Help-Desk-Support.jpg')");
         this.renderer.setStyle(document.body, 'background-size', "cover");
         this.renderer.setStyle(document.body, 'background-repeat', "no-repeat");
-        this.renderer.setStyle(document.body, 'background-position', "center");
         this.router.navigate(['/login']);
     }
 }

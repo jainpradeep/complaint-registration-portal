@@ -131,16 +131,16 @@ body {
 
   .btn-custom {
     color: white;
-    background-color:#0A8A8A ;
-    border-color: #006262;
+    background-color:#3488A5 ;
+    border-color: #3488A5;
   }
   .btn-custom:hover,
   .btn-custom:focus,
   .btn-custom:active,
   .btn-custom.active {
     color: white;
-    background-color: #0A8A8A;
-    border-color: #006262;
+    background-color: #3488A5;
+    border-color: #3488A5;
   }
   .btn-custom.disabled:hover,
   .btn-custom.disabled:focus,
@@ -155,7 +155,7 @@ body {
   fieldset[disabled] .btn-custom:active,
   fieldset[disabled] .btn-custom.active {
     color: white;
-    background-color: #0A8A8A;
-    border-color: #006262;
+    background-color: #3488A5;
+    border-color: #3488A5;
   }
   

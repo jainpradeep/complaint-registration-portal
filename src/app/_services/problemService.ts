@@ -12,7 +12,7 @@ export class problemService {
 
     getLocationProblem(location:any){
         this.spinner.show()
-        return this.http.post<any>('http://localhost:3006/getLocationProblem', location)
+        return this.http.post<any>('http://10.14.151.91:3006/getLocationProblem', location)
         .pipe(map(res => {
             this.spinner.hide();
                   return res;
@@ -20,7 +20,7 @@ export class problemService {
     }
     insertProblem(problem: any) {
         this.spinner.show()
-        return this.http.post<any>('http://localhost:3006/insertProblem', {problem})
+        return this.http.post<any>('http://10.14.151.91:3006/insertProblem', {problem})
             .pipe(map(res => {
                 this.spinner.hide();
                 return res;
@@ -28,7 +28,7 @@ export class problemService {
     }
     editProblem(problem: any) {
         this.spinner.show()
-        return this.http.post<any>('http://localhost:3006/editProblem', {problem})
+        return this.http.post<any>('http://10.14.151.91:3006/editProblem', {problem})
             .pipe(map(res => {
                 this.spinner.hide();
                 return res;
@@ -36,7 +36,7 @@ export class problemService {
     }
     deleteProblem(problem: any) {
         this.spinner.show()
-        return this.http.post<any>('http://localhost:3006/deleteProblem', {problem})
+        return this.http.post<any>('http://10.14.151.91:3006/deleteProblem', {problem})
             .pipe(map(res => {
                 this.spinner.hide();
                 return res;

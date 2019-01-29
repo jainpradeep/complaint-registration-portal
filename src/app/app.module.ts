@@ -32,6 +32,7 @@ import { WindowScrolling } from "./_services";
 import { NumberDirective } from './numbers-only.directive';;
 import { UserComponent } from './user/user.component'
 import { complaintService } from './_services';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
     imports: [
@@ -45,6 +46,9 @@ import { complaintService } from './_services';
         NgbModule.forRoot(),
         NgxPaginationModule,
         Ng2SmartTableModule,    
+        BrowserModule, 
+        BrowserAnimationsModule, 
+        ToastrModule.forRoot(),
         AngularFontAwesomeModule,
         NgMaterialMultilevelMenuModule,
         BrowserAnimationsModule,

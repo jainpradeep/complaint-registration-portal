@@ -12,7 +12,7 @@ export class userService {
 
     getLocationUsers(location:any){
         this.spinner.show()
-        return this.http.post<any>('http://localhost:3006/getLocationUsers', location)
+        return this.http.post<any>('http://10.14.151.91:3006/getLocationUsers', location)
         .pipe(map(res => {
             this.spinner.hide();
                   return res;
@@ -20,7 +20,7 @@ export class userService {
     }
     insertUser(user: any) {
         this.spinner.show()
-        return this.http.post<any>('http://localhost:3006/insertUser', {user})
+        return this.http.post<any>('http://10.14.151.91:3006/insertUser', {user})
             .pipe(map(res => {
                 this.spinner.hide();
                 return res;
@@ -28,7 +28,7 @@ export class userService {
     }
     editUser(user: any) {
         this.spinner.show()
-        return this.http.post<any>('http://localhost:3006/editUser', {user})
+        return this.http.post<any>('http://10.14.151.91:3006/editUser', {user})
             .pipe(map(res => {
                 this.spinner.hide();
                 return res;
@@ -36,7 +36,7 @@ export class userService {
     }
     deleteUser(user: any) {
         this.spinner.show()
-        return this.http.post<any>('http://localhost:3006/deleteUser', {user})
+        return this.http.post<any>('http://10.14.151.91:3006/deleteUser', {user})
             .pipe(map(res => {
                 this.spinner.hide();
                 return res;

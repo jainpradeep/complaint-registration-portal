@@ -1,4 +1,4 @@
-import { Component,  ChangeDetectorRef} from '@angular/core';
+import { Component,  ChangeDetectorRef, ViewContainerRef} from '@angular/core';
 import { LocationService } from '../_services';
 import { userService } from '../_services';
 import { problemService } from '../_services';
@@ -11,6 +11,8 @@ import { Router,NavigationEnd } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner'
 import 'babel-polyfill'
 import { callbackify } from 'util';
+import { ToastrService } from 'ngx-toastr';
+
 
 @Component({
   selector: 'app-user',
@@ -34,6 +36,7 @@ export class UserComponent{
     startDate :any
     fromDate: NgbDate;
     currentLocation : any;
+    locationProblems : any[] = [];
     newEditLocation : any = {
         parent : "",
         employee : "",
@@ -55,14 +58,15 @@ export class UserComponent{
     userComplaints : any[]=[];
     config = {
         paddingAtStart: true,
-        listBackgroundColor: `rgb(0, 128, 128)`,
+        listBackgroundColor: `rgb(59,153,186)`,
         fontColor: `rgb(255,255,255)`,
-        backgroundColor: `rgb(0, 128, 128)`,
+        backgroundColor: `rgb(59,153,186)`,
         highlightOnSelect: true,
         selectedListFontColor: `teal`,
         interfaceWithRoute: false,
         collapseOnSelect: true
     };
+
     userSubMenu : any;
     initialiseMenu: boolean = true; 
     newLocation :any = {
@@ -71,7 +75,7 @@ export class UserComponent{
         officer:"",
         label: "",
         key: "ioc123",
-        icon : "fa fa-sitemap fa-1x"
+        icon : "fa fa-university fa-1x"
     }
 
     userTypes = [{name: "siteEngineer"},{name: "engineerInCharge"},{name:"hod"}];
@@ -155,11 +159,11 @@ export class UserComponent{
         var _this = this;
         this.selectedLocationElement = selectedloc;
         this.currentLocation  =  {
-            tag : selectedloc ? selectedloc.innerHTML : this.selectLocationSubTree.tag,
+            tag : selectedloc ? selectedloc.innerText : this.selectLocationSubTree.tag,
         };
         this.setcomplaintsFilter(selectedloc)
         if (this.initialiseMenu == true) {
-            this.searchTreeLocationIndex(this.filteredLocationList[0], selectedloc ? selectedloc.innerHTML : this.selectLocationSubTree.tag);
+            this.searchTreeLocationIndex(this.filteredLocationList[0], selectedloc ? selectedloc.innerText : this.selectLocationSubTree.tag);
         }
         this.locationListFiltered = this.locationList.filter(function(loc:any){
             var filterLocation = (_this.selectedLocationElement != null)? (_this.selectedLocationElement.innerText === (loc.parent?loc.parent:null)) : false;
@@ -167,149 +171,209 @@ export class UserComponent{
             return filterLocation;
         });
 
-        this.settingsComplaint = {
-          columns: {
-            problem: {
-              title: 'Problem'
-            },
-            description: {
-              title: 'Description'
-            },
-            priority: {
-              title: 'Priority',
-              editor: {
-                  type: 'list',
-                  config: {
-                  selectText: 'Select',
-                     list: [
-                      {value: 'High', title: 'High'},
-                      {value: 'Medium', title: 'Medium'},
-                      {value: 'Low', title: 'Low'},
-                    ]    
-                 }
-         }
-            },
-            status: {
-              title: 'Status',
-              editable : false
-            },
-            remarks: {
-              title: 'Remarks',
-              editable : false,
-            },
-      },
-          add:{
-              confirmCreate:true
-          },
-          edit:{
-               confirmSave:true
-              },
-          delete :{
-                  confirmDelete: true
-                }
-  
-        };
-
-
-        this.settingsIncharge = {
-          columns: {
-            eid: {
-              title: 'EmployeeID'
-            },
-            problem: {
-              title: 'Problem'
-            },
-            description: {
-              title: 'Description'
-            },
-            priority: {
-              title: 'Priority',
-              editor: {
-                  type: 'list',
-                  config: {
-                  selectText: 'Select',
-                     list: [
-                      {value: 'High', title: 'High'},
-                      {value: 'Medium', title: 'Medium'},
-                      {value: 'Low', title: 'Low'},
-                    ]    
-                 }
-         }
-            },
-            status: {
-              title: 'Status',
-              editor: {
-                type: 'list',
-                config: {
-                selectText: 'Select',
-                   list: [
-                    {value: 'In Process', title: 'In Process'},
-                    {value: 'Completed', title: 'Completed'},
-                    {value: 'Closed', title: 'Closed'}
-                  ]    
-               }
-       }
-            },
-            remarks: {
-              title: 'Remarks'
-            },
-      },
-          edit:{
-               confirmSave:true
-              },
-  
-        };
-
-        this.settingsViewer = {
-          columns: {
-            eid: {
-              title: 'EmployeeID'
-            },
-            problem: {
-              title: 'Problem'
-            },
-            description: {
-              title: 'Description'
-            },
-            priority: {
-              title: 'Priority'
-            },
-            status: {
-              title: 'Status'
-            },
-            remarks: {
-              title: 'Remarks'
-            },
-      },
-        };
-
+        this.initTableSettings()
+ 
         this.initialiseMenu = true;
     }
 
+
+    initTableSettings = function(){
+        this.settingsComplaint = {
+            columns: {
+              problem: {
+                title: 'Problem',
+                editor: {
+                  type: 'list',
+                  config: {
+                  selectText: 'Select',
+                     list: this.locationProblems.map(function(loc:any){
+                                  loc.value = loc.problem;
+                                  loc.title = loc.problem;
+                                  return loc
+                              })       
+                          }
+                      }
+              },
+              description: {
+                title: 'Description'
+              },           
+              priority: {
+                title: 'Priority',
+                editor: {
+                    type: 'list',
+                    config: {
+                    selectText: 'Select',
+                       list: [
+                        {value: 'High', title: 'High'},
+                        {value: 'Medium', title: 'Medium'},
+                        {value: 'Low', title: 'Low'},
+                      ]    
+                   }
+           }
+              },
+              createdDate: {
+                  title: 'Created Date',
+                  editable : false,
+                  addable:false
+                },
+              lastUpdated: {
+                 title: 'Last Updated',
+                 editable : false,
+                 addable:false
+                },
+              status: {
+                title: 'Status',
+                editable : false,
+                addable: false
+              },
+              remarks: {
+                title: 'Remarks',
+                editable : false,
+                addable: false
+              },
+        },
+            add:{
+                confirmCreate:true
+            },
+            edit:{
+                 confirmSave:true
+                },
+            delete :{
+                    confirmDelete: true
+                  }
+    
+          };
+  
+  
+          this.settingsIncharge = {
+            columns: {
+              eid: {
+                title: 'EmployeeID',
+                editable : false
+              },
+              problem: {
+                title: 'Problem',
+                editable : false
+              },
+              description: {
+                title: 'Description',
+                editable : false
+              },           
+              createdDate: {
+                  title: 'Created Date',
+                  editable : false
+                },
+              lastUpdated: {
+                 title: 'Last Updated',
+                 editable : false
+                },
+              priority: {
+                title: 'Priority',
+                editor: {
+                    type: 'list',
+                    config: {
+                    selectText: 'Select',
+                       list: [
+                        {value: 'High', title: 'High'},
+                        {value: 'Medium', title: 'Medium'},
+                        {value: 'Low', title: 'Low'},
+                      ]    
+                   }
+           }
+              },
+              status: {
+                title: 'Status',
+                editor: {
+                  type: 'list',
+                  config: {
+                  selectText: 'Select',
+                     list: [
+                      {value: 'In Process', title: 'In Process'},
+                      {value: 'Completed', title: 'Completed'},
+                      {value: 'Submitted', title: 'Submitted`'},
+                      {value: 'Closed', title: 'Closed'}
+                    ]    
+                 }
+         }
+              },
+              remarks: {
+                title: 'Remarks'
+              },
+        },
+            edit:{
+                 confirmSave:true
+                },
+          actions: {
+          add: false,
+          edit: true,
+          delete: false,
+          },
+      };
+  
+          this.settingsViewer = {
+            columns: {
+              eid: {
+                title: 'EmployeeID'
+              },
+              problem: {
+                title: 'Problem'
+              },
+              description: {
+                title: 'Description'
+              },           
+              createdDate: {
+                  title: 'Created Date'
+                },
+              lastUpdated: {
+                 title: 'Last Updated'
+                },
+              priority: {
+                title: 'Priority'
+              },
+              status: {
+                title: 'Status'
+              },
+              remarks: {
+                title: 'Remarks'
+              },
+        },
+        actions: {
+          add: false,
+          edit: false,
+          delete: false,
+        },
+          };
+    }
+
     setcomplaintsFilter = function(location:any){
-      if(location.innerHTML.indexOf(":")!=-1){
-        this.currentView = "blankView"
-      }
-      else if(location.innerHTML.indexOf(",")!=-1){
+      if(location.innerText.indexOf(":")!=-1){
+        this.currentView = "blankView";
+     }
+      else if(location.innerText.indexOf(",")!=-1){
         this.currentView = "inchargeView";
-        this.problemLocationMap = location.innerHTML.trim().split(/\s*,\s*/);
+        this.problemLocationMap = location.innerText.split(/\s*,\s*/);
+        this.getLocationProblemComplaints();
       }
-      else if(!isNaN(location.innerHTML)){
-        this.currentView = "complaintView"
+      else if(!isNaN(location.innerText)){
+        this.currentView = "complaintView";
+        this.username = location.innerText;
+        this.getUserComplaints();
       }
       else {
         this.currentView = "viewerView";
-        this.locationMap = location.innerHTML
+        this.locationMap = location.innerText
         this.getLocationComplaints();
        }      
     }
     
-    constructor(private chRef: ChangeDetectorRef, private modalService: NgbModal, private AuthenticationService: AuthenticationService, private HindiDataService: HindiDataService, calendar: NgbCalendar, private userService: userService,private locationService: LocationService,private problemService: problemService,private complaintService: complaintService,private router: Router, private spinner: NgxSpinnerService) {
+    constructor(private chRef: ChangeDetectorRef,private toastr: ToastrService, private modalService: NgbModal, private AuthenticationService: AuthenticationService, private HindiDataService: HindiDataService, calendar: NgbCalendar, private userService: userService,private locationService: LocationService,private problemService: problemService,private complaintService: complaintService,private router: Router, private spinner: NgxSpinnerService) {
         document.body.style.background = 'none';
         this.spinner.show();
+        this.getLocationProblems();
         this.getLocationTree();
         this.getLocationUsers();
-        this.getUserComplaints();
+        this.getUserComplaints();        
+        this.initTableSettings()
     }
 
     getLocationTree(){
@@ -318,6 +382,16 @@ export class UserComponent{
             data => {
                 this.locationList = data.locationList;
                this.getContent();
+            },
+            error => {})
+        }
+
+    getLocationProblems(){
+        var _this = this;
+        this.locationService.getLocationProblems({location : localStorage.getItem('location')} ).subscribe(
+            data => {
+                this.locationProblems = data.locationProblems;
+                this.getContent();
             },
             error => {})
         }
@@ -341,6 +415,16 @@ export class UserComponent{
             },
             error => {})   
     }        
+
+    
+    getLocationProblemComplaints(){
+        var _this = this;
+        this.complaintService.getLocationProblemComplaints({location : _this.problemLocationMap[1],problem : _this.problemLocationMap[0]}).subscribe(
+            data => {
+                this.userComplaints = data.complaints;
+            },
+            error => {})   
+    }
 
     getLocationComplaints(){
         var _this = this;
@@ -406,11 +490,13 @@ export class UserComponent{
     addComplaint(event:any) {
       var data = {   
         "eid" : localStorage.getItem('username'),
+        "createdDate" : (new Date()).toLocaleString(),
+        "lastUpdated" : (new Date()).toLocaleString(),
         "location": localStorage.getItem('location'),
         "problem" : event.newData.problem,
         "description" : event.newData.description,
         "priority" : event.newData.priority,
-        "status" : "submitted",
+        "status" : "Submitted",
         "remarks" : "",
         "history" : <any>[]     
     };
@@ -418,7 +504,7 @@ export class UserComponent{
       ).subscribe(
           data => {
               event.confirm.resolve(event.newData);
-              this.router.navigate(['user']);
+              this.getUserComplaints();
           },
           error => {
               if (error.error instanceof Error) {
@@ -433,10 +519,13 @@ export class UserComponent{
     updateComplaint(event:any) {
       var data = {"eid" : localStorage.getItem('username'),
         "problem" : event.newData.problem,
+        "createdDate" : event.newData.createdDate,
+        "lastUpdated" : (new Date()).toLocaleString(),
+        "location" : event.newData.location,
         "description" : event.newData.description,
         "priority" : event.newData.priority,
         "status" : event.newData.status,
-        "remarks" : "",
+        "remarks" :event.newData.remarks,
         "history" : <any>[],   
         "_id" : event.newData._id
       }
@@ -444,7 +533,7 @@ export class UserComponent{
         ).subscribe(
             data => {
                 event.confirm.resolve(event.newData);
-                this.router.navigate(['user']);
+                this.getUserComplaints();
             },
             error => {
                 if (error.error instanceof Error) {
@@ -462,13 +551,14 @@ export class UserComponent{
                   "priority" : event.data.priority,
                   "status" : "submitted",
                   "remarks" : "",
-                  "history" : <any>[]   
+                  "history" : <any>[],
+                  "_id" : event.data._id
         }
         this.complaintService.deleteComplaint(data
           ).subscribe(
               data => {
                   event.confirm.resolve(event.data);
-                  this.router.navigate(['user']);
+                  this.getUserComplaints();
               },
               error => {
                   if (error.error instanceof Error) {
@@ -479,32 +569,7 @@ export class UserComponent{
               });
     }
 
-
-    updateIncharge(event:any) {
-      var data = {"eid" : localStorage.getItem('username'),
-      "problem" : event.newData.problem,
-      "description" : event.newData.description,
-      "priority" : event.newData.priority,
-      "status" : event.newData.status,
-      "remarks" : event.newData.remarks,
-      "history" : <any>[],   
-      "_id" : event.newData._id
-    }
-        this.complaintService.editIncharge(data
-          ).subscribe(
-              data => {
-                  event.confirm.resolve(event.newData);
-                  this.router.navigate(['']);
-              },
-              error => {
-                  if (error.error instanceof Error) {
-                      console.log("Client-side error occured.");
-                  } else {
-                      console.log("Server-side error occured.");
-                  }
-              });
-      }
-  
+ 
     getUpdatededLocationTree(){
         this.locationService.getLocationHierarchy().subscribe(
             data => {
@@ -544,6 +609,7 @@ export class UserComponent{
                 items : _this.appitems
               }]
             });
+            console.log(this.appitems)
         },
         error => {});
     }
@@ -577,7 +643,7 @@ export class UserComponent{
             "label": this.newLocation.tag,
             "officer": "admin" + this.newLocation.tag.replace(/ /g,''),
             "key" : "ioc123",
-            "faIcon": 'fa fa-sitemap fa-1x'
+            "faIcon": 'fa fa-university fa-1x'
         }).subscribe(
             data => {
                 console.log("Location Saved" + data);
@@ -620,4 +686,8 @@ export class UserComponent{
     isRange(date: NgbDate) {
         return date.equals(this.fromDate) || date.equals(this.toDate) || this.isInside(date) || this.isHovered(date);
     }
+    showSuccess() {
+        this.toastr.success('Hello world!', 'Toastr fun!');
+      }
+
 }

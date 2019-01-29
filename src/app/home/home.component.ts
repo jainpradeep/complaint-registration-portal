@@ -9,6 +9,7 @@ import { NgbDate, NgbCalendar} from '@ng-bootstrap/ng-bootstrap';
 import { Router,NavigationEnd } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner'
 import 'babel-polyfill'
+import { throwError } from 'rxjs';
 @Component({
     templateUrl: 'home.component.html',
     styleUrls: ['home.component.css'],
@@ -18,7 +19,7 @@ import 'babel-polyfill'
 export class HomeComponent {
     locationList: any = [];
 
-    
+    treeView:any;
     currentView = "userView";
     items: any;
     navigationSubscription:any;
@@ -49,12 +50,12 @@ export class HomeComponent {
     locationUsers : any = [];
     locationProblem : any = [];
     selectLocationSubTree: any = this.filteredLocationList[0];
-   
+    childView :any;
     config = {
         paddingAtStart: true,
-        listBackgroundColor: `rgb(0, 128, 128)`,
+        listBackgroundColor: `rgb(59,153,186)`,
         fontColor: `rgb(255,255,255)`,
-        backgroundColor: `rgb(0, 128, 128)`,
+        backgroundColor: `rgb(59,153,186)`,
         highlightOnSelect: true,
         selectedListFontColor: `teal`,
         interfaceWithRoute: false,
@@ -67,7 +68,7 @@ export class HomeComponent {
         officer:"",
         label: "",
         key: "ioc123    ",
-        icon : "fa fa-sitemap fa-1x"
+        icon : "fa fa-university fa-1x"
     }
 
     onSelect(event: any) {
@@ -151,108 +152,125 @@ export class HomeComponent {
         this.currentLocation  =  {
             tag : selectedloc ? selectedloc.innerHTML : this.selectLocationSubTree.tag,
         };
-        if (this.initialiseMenu == true) {
-            this.searchTreeLocationIndex(this.filteredLocationList[0], selectedloc ? selectedloc.innerHTML : this.selectLocationSubTree.tag);
-            // this.getLocationHindiRecords(this.clickedItems);
-        }
-        this.locationListFiltered = this.locationList.filter(function(loc:any){
-            var filterLocation = (_this.selectedLocationElement != null)? (_this.selectedLocationElement.innerText === (loc.parent?loc.parent:null)) : false;
-            console.log(loc.tag +  " " + filterLocation);
-            return filterLocation;
-        });
-        this.settingsUsers = {
-            columns: {
-            eid: {
-                title: 'EmployeeID'
-              },
-              viewPermissionRoot: {
-                    title: 'View Permissions',
-                    editor: {
-                         type: 'list',
-                         config: {
-                         selectText: 'Select',
-                            list: this.locationList.map(function(loc:any){
-                                loc.value = loc.tag;
-                                loc.title = loc.tag;
-                                return loc
-                            })       
-                        }
-                }
-            }
-        },
-            add:{
-                confirmCreate:true
-            },
-            edit:{
-                 confirmSave:true
-                },
-            delete :{
-                    confirmDelete: true
-                  }
-    
-          };
 
-          this.settingsProblem = {
-            columns: {
-              problem: {
-                title: 'Problem'
-              },
-              description: {
-                title: 'Description'
-              },
-              priority: {
-                title: 'Priority',
-                editor: {
-                    type: 'list',
-                    config: {
-                    selectText: 'Select',
-                       list: [
-                        {value: 'High', title: 'High'},
-                        {value: 'Medium', title: 'Medium'},
-                        {value: 'Low', title: 'Low'},
-                      ]    
-                   }
-           }
-              },
-              siteEngineer: {
-                title: 'Site engineer'
-              },
-              engineerInCharge: {
-                title: 'Engineer In Charge'
-              },
-              hod: {
-                title: 'HOD'
-              },
-              workOrderNo: {
-                title: 'Work Order No'
-              },
-              workOrderDetails: {
-                title: 'Work Order Details'
-              }
-            
-        },
-            add:{
-                confirmCreate:true
-            },
-            edit:{
-                 confirmSave:true
-                },
-            delete :{
-                    confirmDelete: true
-                  }
-    
-          };
+        // this.setTreeView(this.currentLocation.tag);
+        // if (this.initialiseMenu == true) {
+        //     this.searchTreeLocationIndex(this.filteredLocationList[0], selectedloc ? selectedloc.innerHTML : this.selectLocationSubTree.tag);
+        //     // this.getLocationHindiRecords(this.clickedItems);
+        // }
+        // this.locationListFiltered = this.locationList.filter(function(loc:any){
+        //     var filterLocation = (_this.selectedLocationElement != null)? (_this.selectedLocationElement.innerText === (loc.parent?loc.parent:null)) : false;
+        //     console.log(loc.tag +  " " + filterLocation);
+        //     return filterLocation;
+        // });
+        // this.initTableSettings()
 
-        this.initialiseMenu = true;
+
+
+         this.getLocationUsers(this.currentLocation.tag);
+        // this.getLocationProblem(this.currentLocation.tag);
+        // this.initialiseMenu = true;
+    }
+    
+    setTreeView = function(location:any){
+        this.locationService.checkLocationChild(location).subscribe(
+            (data:any) => {
+                this.treeView = data.location.length ? "BlankView" : "NormalView"
+            },
+            (error:any) => {})   
     }
 
-    
+    initTableSettings(){
+    this.settingsUsers = {
+        columns: {
+            EMPNO: {
+            title: 'Employee ID'
+          },
+        //   viewPermissionRoot: {
+        //         title: 'View Permissions',
+        //         editor: {
+        //              type: 'list',
+        //              config: {
+        //              selectText: 'Select',
+        //                 list: this.locationList.map(function(loc:any){
+        //                     loc.value = loc.tag;
+        //                     loc.title = loc.tag;
+        //                     return loc
+        //                 })       
+        //             }
+        //     }
+        // }
+    },
+        // add:{
+        //     confirmCreate:true
+        // },
+        // edit:{
+        //      confirmSave:true
+        //     },
+        // delete :{
+        //         confirmDelete: true
+        //       }
+
+      };
+
+      this.settingsProblem = {
+        columns: {
+          problem: {
+            title: 'Problem'
+          },
+          description: {
+            title: 'Description'
+          },
+          priority: {
+            title: 'Priority',
+            editor: {
+                type: 'list',
+                config: {
+                selectText: 'Select',
+                   list: [
+                    {value: 'High', title: 'High'},
+                    {value: 'Medium', title: 'Medium'},
+                    {value: 'Low', title: 'Low'},
+                  ]    
+               }
+       }
+          },
+          siteEngineer: {
+            title: 'Site engineer'
+          },
+          engineerInCharge: {
+            title: 'Engineer In Charge'
+          },
+          hod: {
+            title: 'HOD'
+          },
+          workOrderNo: {
+            title: 'Work Order No'
+          },
+          workOrderDetails: {
+            title: 'Work Order Details'
+          }
+        
+    },
+        add:{
+            confirmCreate:true
+        },
+        edit:{
+             confirmSave:true
+            },
+        delete :{
+                confirmDelete: true
+              }
+
+      };
+    }
     constructor(private chRef: ChangeDetectorRef, private modalService: NgbModal, private AuthenticationService: AuthenticationService, private HindiDataService: HindiDataService, calendar: NgbCalendar, private userService: userService,private locationService: LocationService,private problemService: problemService,private router: Router, private spinner: NgxSpinnerService) {
         document.body.style.background = 'none';
         this.spinner.show();
         this.getLocationTree();
-        this.getLocationUsers();
-        this.getLocationProblem();
+        this.getLocationUsers(localStorage.getItem('location'));
+        this.getLocationProblem(localStorage.getItem('location'));
+        this.initTableSettings()
     }
 
     getLocationTree(){
@@ -265,17 +283,17 @@ export class HomeComponent {
             error => {})
         }
     
-    getLocationUsers(){
+    getLocationUsers(location:any){
         var _this = this;
-        this.userService.getLocationUsers({location : localStorage.getItem('location')}).subscribe(
+        this.userService.getLocationUsers({location : location }).subscribe(
             data => {
                this.locationUsers = data.locationUsers;
             },
             error => {})   
     }
-    getLocationProblem(){
+    getLocationProblem(location:any){
         var _this = this;
-        this.problemService.getLocationProblem({location : localStorage.getItem('location')}).subscribe(
+        this.problemService.getLocationProblem({location : location}).subscribe(
             data => {
                this.locationProblem = data.locationProblem;
             },
@@ -312,7 +330,7 @@ export class HomeComponent {
                     "hod" : event.newData.hod,
                     "workOrderNo" : event.newData.workOrderNo,
                     "workOrderDetails" : event.newData.workOrderDetails,
-                    "location" : localStorage.getItem('location')};
+                    "location" : this.currentLocation.tag};
         this.problemService.insertProblem(data
         ).subscribe(
             data => {
@@ -472,7 +490,7 @@ export class HomeComponent {
             "label": this.newLocation.tag,
             "officer": "admin" + this.newLocation.tag.replace(/ /g,''),
             "key" : "ioc123",
-            "faIcon": 'fa fa-sitemap fa-1x'
+            "faIcon": 'fa fa-university fa-1x'
         }).subscribe(
             data => {
                 console.log("Location Saved" + data);
