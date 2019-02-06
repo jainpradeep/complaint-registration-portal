@@ -4,10 +4,10 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import {Router} from "@angular/router";
 import { NgxSpinnerService } from 'ngx-spinner';
-
+import { ToastrService } from 'ngx-toastr';
 @Injectable()
 export class complaintService {
-    constructor(private http: HttpClient,private router: Router, private spinner: NgxSpinnerService) { }
+    constructor(private toastr: ToastrService,private http: HttpClient,private router: Router, private spinner: NgxSpinnerService) { }
   
 
     getLocationComplaint(location:any){
@@ -15,7 +15,7 @@ export class complaintService {
         return this.http.post<any>('http://10.14.151.91:3006/getLocationComplaint', location)
         .pipe(map(res => {
             this.spinner.hide();
-                  return res;
+            return res;
         }));
     }
 
@@ -24,7 +24,7 @@ export class complaintService {
         return this.http.post<any>('http://10.14.151.91:3006/getLocationProblemComplaint', data)
         .pipe(map(res => {
             this.spinner.hide();
-                  return res;
+            return res;
         }));
     }
 
@@ -34,7 +34,7 @@ export class complaintService {
         return this.http.post<any>('http://10.14.151.91:3006/getUserComplaint', user)
         .pipe(map(res => {
             this.spinner.hide();
-                  return res;
+            return res;
         }));
     }
 
@@ -42,6 +42,16 @@ export class complaintService {
         this.spinner.show()
         return this.http.post<any>('http://10.14.151.91:3006/insertComplaint', {complaint})
             .pipe(map(res => {
+                if (res.msg == "success") {
+                    this.toastr.success('Success!' ,"",{
+                        timeOut: 3000
+                    });
+                } 
+                else{
+                    this.toastr.error('Please Try Again', 'Server Failure', {
+                        timeOut: 3000
+                    });
+                }
                 this.spinner.hide();
                 return res;
         }));
@@ -50,6 +60,16 @@ export class complaintService {
         this.spinner.show()
         return this.http.post<any>('http://10.14.151.91:3006/editComplaint', {complaint})
             .pipe(map(res => {
+                if (res.msg == "success") {
+                    this.toastr.success('Success!' ,"",{
+                        timeOut: 3000
+                    });
+                } 
+                else{
+                    this.toastr.error('Please Try Again', 'Server Failure', {
+                        timeOut: 3000
+                    });
+                }
                 this.spinner.hide();
                 return res;
         }));
@@ -58,6 +78,16 @@ export class complaintService {
         this.spinner.show()
         return this.http.post<any>('http://10.14.151.91:3006/deleteComplaints', {complaint})
             .pipe(map(res => {
+                if (res.msg == "success") {
+                    this.toastr.success('Success!' ,"",{
+                        timeOut: 3000
+                    });
+                } 
+                else{
+                    this.toastr.error('Please Try Again', 'Server Failure', {
+                        timeOut: 3000
+                    });
+                }
                 this.spinner.hide();
                 return res;
             }));

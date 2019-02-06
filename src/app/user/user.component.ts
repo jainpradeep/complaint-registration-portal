@@ -5,13 +5,14 @@ import { problemService } from '../_services';
 import { complaintService } from '../_services';
 import { NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import { AuthenticationService } from '../_services';
-import { HindiDataService}  from '../_services';
+ 
 import { NgbDate, NgbCalendar} from '@ng-bootstrap/ng-bootstrap';
 import { Router,NavigationEnd } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner'
 import 'babel-polyfill'
 import { callbackify } from 'util';
 import { ToastrService } from 'ngx-toastr';
+
 
 
 @Component({
@@ -118,7 +119,7 @@ export class UserComponent{
 
     searchTreeLocationIndex = function(item: any, tag: any) {
         this.locationsearchTreeIndex(item, tag)
-        console.log(this.clickedItems)
+       
         return [this.clickedItems]
     }
 
@@ -167,12 +168,12 @@ export class UserComponent{
         }
         this.locationListFiltered = this.locationList.filter(function(loc:any){
             var filterLocation = (_this.selectedLocationElement != null)? (_this.selectedLocationElement.innerText === (loc.parent?loc.parent:null)) : false;
-            console.log(loc.tag +  " " + filterLocation);
+           
+        
             return filterLocation;
         });
 
         this.initTableSettings()
- 
         this.initialiseMenu = true;
     }
 
@@ -180,6 +181,11 @@ export class UserComponent{
     initTableSettings = function(){
         this.settingsComplaint = {
             columns: {
+              complaintID : {
+                  title : "Complaint ID",
+                  editable : false,
+                  addable:false
+              },    
               problem: {
                 title: 'Problem',
                 editor: {
@@ -214,7 +220,9 @@ export class UserComponent{
               createdDate: {
                   title: 'Created Date',
                   editable : false,
-                  addable:false
+                  addable:false,
+                  sort: true,
+                  sortDirection : 'desc'
                 },
               lastUpdated: {
                  title: 'Last Updated',
@@ -231,9 +239,10 @@ export class UserComponent{
                 editable : false,
                 addable: false
               },
-        },
+        }, 
             add:{
-                confirmCreate:true
+                confirmCreate:true,
+                // addButtonContent : "<button class = 'addNew'><i id = ''> </i></button>"
             },
             edit:{
                  confirmSave:true
@@ -251,6 +260,15 @@ export class UserComponent{
                 title: 'EmployeeID',
                 editable : false
               },
+              name:{
+                title:"Name",
+                editable : false
+            },  
+            
+              complaintID : {
+                title : "Complaint ID",
+                editable : false
+            },  
               problem: {
                 title: 'Problem',
                 editable : false
@@ -261,7 +279,9 @@ export class UserComponent{
               },           
               createdDate: {
                   title: 'Created Date',
-                  editable : false
+                  editable : false,
+                  sort: true,
+                  sortDirection : 'desc'
                 },
               lastUpdated: {
                  title: 'Last Updated',
@@ -315,6 +335,12 @@ export class UserComponent{
               eid: {
                 title: 'EmployeeID'
               },
+              name:{
+                  title:"Name"
+              },
+              complaintID : {
+                title : "Complaint ID",
+              },  
               problem: {
                 title: 'Problem'
               },
@@ -322,7 +348,9 @@ export class UserComponent{
                 title: 'Description'
               },           
               createdDate: {
-                  title: 'Created Date'
+                  title: 'Created Date',
+                  sort: true,
+                  sortDirection : 'desc'
                 },
               lastUpdated: {
                  title: 'Last Updated'
@@ -354,7 +382,7 @@ export class UserComponent{
         this.problemLocationMap = location.innerText.split(/\s*,\s*/);
         this.getLocationProblemComplaints();
       }
-      else if(!isNaN(location.innerText)){
+      else if(location.innerText === "My Complaints"){
         this.currentView = "complaintView";
         this.username = location.innerText;
         this.getUserComplaints();
@@ -365,15 +393,19 @@ export class UserComponent{
         this.getLocationComplaints();
        }      
     }
-    
-    constructor(private chRef: ChangeDetectorRef,private toastr: ToastrService, private modalService: NgbModal, private AuthenticationService: AuthenticationService, private HindiDataService: HindiDataService, calendar: NgbCalendar, private userService: userService,private locationService: LocationService,private problemService: problemService,private complaintService: complaintService,private router: Router, private spinner: NgxSpinnerService) {
+
+    addNewComplaint = function(event: Event){
+        var element = document.getElementsByClassName('ng2-smart-action-add-add')[0];
+
+    }
+  
+    constructor(private chRef: ChangeDetectorRef,private toastr: ToastrService, private modalService: NgbModal, private AuthenticationService: AuthenticationService, calendar: NgbCalendar, private userService: userService,private locationService: LocationService,private problemService: problemService,private complaintService: complaintService,private router: Router, private spinner: NgxSpinnerService) {
         document.body.style.background = 'none';
         this.spinner.show();
         this.getLocationProblems();
         this.getLocationTree();
-        this.getLocationUsers();
-        this.getUserComplaints();        
-        this.initTableSettings()
+   //     this.getLocationUsers();
+        this.getUserComplaints();     
     }
 
     getLocationTree(){
@@ -391,7 +423,7 @@ export class UserComponent{
         this.locationService.getLocationProblems({location : localStorage.getItem('location')} ).subscribe(
             data => {
                 this.locationProblems = data.locationProblems;
-                this.getContent();
+                this.initTableSettings()
             },
             error => {})
         }
@@ -451,7 +483,7 @@ export class UserComponent{
               _this.locationProblem = <any []>data.locationProblem;
               _this.userSubMenu = _this.userTypes.reduce(function(filteredSubMenu:any, userType:any){
                 _this.locationProblem.map(function(problem:any){
-                  if(problem[userType.name] == localStorage.getItem('username')){
+                  if(problem[userType.name] == Number(localStorage.getItem('username'))){
                     if(!userType.userTypeFound){
                       userType.userTypeFound = true;
                       filteredSubMenu.push({                
@@ -490,6 +522,7 @@ export class UserComponent{
     addComplaint(event:any) {
       var data = {   
         "eid" : localStorage.getItem('username'),
+        "name": localStorage.getItem('name'),
         "createdDate" : (new Date()).toLocaleString(),
         "lastUpdated" : (new Date()).toLocaleString(),
         "location": localStorage.getItem('location'),
@@ -517,7 +550,8 @@ export class UserComponent{
 
 
     updateComplaint(event:any) {
-      var data = {"eid" : localStorage.getItem('username'),
+      var data = {"eid" : event.newData.eid,
+      "name": event.newData.name,
         "problem" : event.newData.problem,
         "createdDate" : event.newData.createdDate,
         "lastUpdated" : (new Date()).toLocaleString(),
@@ -527,13 +561,14 @@ export class UserComponent{
         "status" : event.newData.status,
         "remarks" :event.newData.remarks,
         "history" : <any>[],   
-        "_id" : event.newData._id
+        "_id" : event.newData._id,
+        "complaintID" : event.newData.complaintID
       }
       this.complaintService.editComplaint(data
         ).subscribe(
             data => {
                 event.confirm.resolve(event.newData);
-                this.getUserComplaints();
+                this.setcomplaintsFilter({innerText : this.currentLocation.tag})
             },
             error => {
                 if (error.error instanceof Error) {
@@ -547,6 +582,7 @@ export class UserComponent{
     deleteComplaint(event:any) {
         var data = {"eid" : event.data.eid,
                   "problem" : event.data.problem,
+                "name" : event.data.name,
                   "description" : event.data.description,
                   "priority" : event.data.priority,
                   "status" : "submitted",
@@ -558,7 +594,7 @@ export class UserComponent{
           ).subscribe(
               data => {
                   event.confirm.resolve(event.data);
-                  this.getUserComplaints();
+                  this.setcomplaintsFilter({innerText : this.currentLocation.tag})
               },
               error => {
                   if (error.error instanceof Error) {
@@ -581,10 +617,13 @@ export class UserComponent{
 
     getContent() {
         this.flattenedLocationList = [];
+        this.filteredLocationList = []
+        this.appitems = [];
+        this.locationConfig = [];
         this.locationService.getLocationConfig().subscribe(data => {
             this.locationConfig = data
             var viewPermissionRoot = localStorage.getItem('viewPermissionRoot');
-            if(viewPermissionRoot != "")
+            if(viewPermissionRoot != "null")
               this.appitems = this.searchTree(this.locationConfig[0], localStorage.getItem('viewPermissionRoot'))
             else{
              this.appitems = null;
@@ -592,24 +631,16 @@ export class UserComponent{
             var _this = this;
             this.getUserSubTree(function(){
               _this.filteredLocationList = _this.appitems = [
-                {tag: localStorage.getItem('username'),
+                {tag: "My Complaints",
                 parent: "",
-                label : localStorage.getItem('username'),
+                label : "My Complaints",
                 officer : "",
                 key: "",
                 faIcon: "",
                 items : _this.userSubMenu
-              },{              
-                tag: "View Hierarchy",
-                parent: "",
-                label : "View Hierarchy :",
-                officer : "",
-                key: "",
-                faIcon: "",
-                items : _this.appitems
-              }]
+              },_this.checkHierarchy()]
             });
-            console.log(this.appitems)
+        
         },
         error => {});
     }
@@ -618,6 +649,17 @@ export class UserComponent{
         this.AuthenticationService.logout();
     }
 
+    checkHierarchy()
+        {
+            return this.appitems ? {              
+            tag: "View Hierarchy",
+            parent: "",
+            label : "View Hierarchy :",
+            officer : "",
+            key: "",
+            faIcon: "",
+            items : this.appitems
+        }: null}
 
     open(content: any) {
         this.lockedWindow = this.modalService.open(content);
@@ -646,7 +688,7 @@ export class UserComponent{
             "faIcon": 'fa fa-university fa-1x'
         }).subscribe(
             data => {
-                console.log("Location Saved" + data);
+               
                 this.getLocationTree();
             },
             error => {

@@ -1,0 +1,2 @@
+"आदरणीय महोदय/महोदया, "  + "\n" + "\n" + "आपकी जानकारी एवं आगामी कार्रवाई हेतु " + req.body.complaint.eid + " ने " + " दिनांक " + moment(new Date(req.body.complaint.createdDate)).format("DD/MM/YYYY") +  " को  " + req.body.complaint.problem +   " संबंधी समस्‍या क्रमांक " + req.body.complaint.complaintID + " को एस्टेट कंप्लेंट रजिस्टर एप्लीकेशन मे दर्ज किया है। " + " \n इस शिकायत पर जल्द ही कार्यवाही की जाएगी " + " \n" + "सादर, " + "\n" + "समस्या निर्वहन अधिकारी"; 
+    

@@ -5,6 +5,6 @@ export * from './location.service';
 export * from './userService';
 export * from './problemService';
 export * from './complaintService';
-export * from './hindiData.service';
+
 export * from './window-scrolling';
 

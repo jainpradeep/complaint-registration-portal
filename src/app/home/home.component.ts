@@ -4,7 +4,7 @@ import { userService } from '../_services';
 import { problemService } from '../_services';
 import { NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import { AuthenticationService } from '../_services';
-import { HindiDataService}  from '../_services';
+ 
 import { NgbDate, NgbCalendar} from '@ng-bootstrap/ng-bootstrap';
 import { Router,NavigationEnd } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner'
@@ -75,17 +75,6 @@ export class HomeComponent {
         console.log(event);
     }
 
-    initEditLocation(){
-        this.newEditLocation = {
-            tag : this.selectLocationSubTree.tag,
-            parent: this.selectLocationSubTree.parent,
-            employee:this.selectLocationSubTree.officer,
-            officerEmail:this.selectLocationSubTree.officerEmail,
-            coordinatorEmail: this.selectLocationSubTree.coordinatorEmail,
-            frequency : this.selectLocationSubTree.frequency
-        }
-    }
-
     setCurrentView = function(view:string){
         this.currentView = view;
     }
@@ -109,7 +98,6 @@ export class HomeComponent {
 
     searchTreeLocationIndex = function(item: any, tag: any) {
         this.locationsearchTreeIndex(item, tag)
-        console.log(this.clickedItems)
         return [this.clickedItems]
     }
 
@@ -150,26 +138,21 @@ export class HomeComponent {
         var _this = this;
         this.selectedLocationElement = selectedloc;
         this.currentLocation  =  {
-            tag : selectedloc ? selectedloc.innerHTML : this.selectLocationSubTree.tag,
+            tag : selectedloc ? selectedloc.innerHTML : this.filteredLocationList[0].tag,
         };
 
-        // this.setTreeView(this.currentLocation.tag);
-        // if (this.initialiseMenu == true) {
-        //     this.searchTreeLocationIndex(this.filteredLocationList[0], selectedloc ? selectedloc.innerHTML : this.selectLocationSubTree.tag);
-        //     // this.getLocationHindiRecords(this.clickedItems);
-        // }
-        // this.locationListFiltered = this.locationList.filter(function(loc:any){
-        //     var filterLocation = (_this.selectedLocationElement != null)? (_this.selectedLocationElement.innerText === (loc.parent?loc.parent:null)) : false;
-        //     console.log(loc.tag +  " " + filterLocation);
-        //     return filterLocation;
-        // });
-        // this.initTableSettings()
-
-
-
-         this.getLocationUsers(this.currentLocation.tag);
-        // this.getLocationProblem(this.currentLocation.tag);
-        // this.initialiseMenu = true;
+        this.setTreeView(this.currentLocation.tag);
+        if (this.initialiseMenu == true) {
+            this.searchTreeLocationIndex(this.filteredLocationList[0], selectedloc ? selectedloc.innerHTML :  this.filteredLocationList[0].tag);
+        }
+        this.locationListFiltered = this.locationList.filter(function(loc:any){
+            var filterLocation = (_this.selectedLocationElement != null)? (_this.selectedLocationElement.innerText === (loc.parent?loc.parent:null)) : false;
+            return filterLocation;
+        });
+        this.initTableSettings()
+        this.getLocationUsers(this.currentLocation.tag);
+        this.getLocationProblem(this.currentLocation.tag);
+        this.initialiseMenu = true;
     }
     
     setTreeView = function(location:any){
@@ -184,41 +167,48 @@ export class HomeComponent {
     this.settingsUsers = {
         columns: {
             EMPNO: {
-            title: 'Employee ID'
-          },
-        //   viewPermissionRoot: {
-        //         title: 'View Permissions',
-        //         editor: {
-        //              type: 'list',
-        //              config: {
-        //              selectText: 'Select',
-        //                 list: this.locationList.map(function(loc:any){
-        //                     loc.value = loc.tag;
-        //                     loc.title = loc.tag;
-        //                     return loc
-        //                 })       
-        //             }
-        //     }
-        // }
-    },
-        // add:{
-        //     confirmCreate:true
-        // },
-        // edit:{
-        //      confirmSave:true
-        //     },
-        // delete :{
-        //         confirmDelete: true
-        //       }
-
+                title: 'Employee ID',
+                editable: false
+            },
+            EMPNAME: {
+                title: 'Employee NAME',
+                editable: false
+            },
+            DESGN: {
+                title: 'Designation',
+                editable: false
+            },            
+            viewPermissionRoot: {
+                title: 'View Permissions',
+                editor: {
+                        type: 'list',
+                        config: {
+                        selectText: 'Select',
+                        list: this.locationList.map(function(loc:any){
+                            loc.value = loc.tag;
+                            loc.title = loc.tag;
+                            return loc
+                        })       
+                    }
+                }
+            }
+        },
+        edit:{
+             confirmSave:true
+            },
+        actions: {
+            add: false,
+            edit: true,
+            delete: false,
+            },
       };
 
       this.settingsProblem = {
         columns: {
           problem: {
-            title: 'Problem'
+            title: 'Problem',
           },
-          description: {
+          description: {    
             title: 'Description'
           },
           priority: {
@@ -264,7 +254,11 @@ export class HomeComponent {
 
       };
     }
-    constructor(private chRef: ChangeDetectorRef, private modalService: NgbModal, private AuthenticationService: AuthenticationService, private HindiDataService: HindiDataService, calendar: NgbCalendar, private userService: userService,private locationService: LocationService,private problemService: problemService,private router: Router, private spinner: NgxSpinnerService) {
+    constructor(private chRef: ChangeDetectorRef, private modalService: NgbModal, private AuthenticationService: AuthenticationService,  calendar: NgbCalendar, private userService: userService,private locationService: LocationService,private problemService: problemService,private router: Router, private spinner: NgxSpinnerService) {
+        this.ngOnInit();
+    }
+
+    ngOnInit(){
         document.body.style.background = 'none';
         this.spinner.show();
         this.getLocationTree();
@@ -287,7 +281,7 @@ export class HomeComponent {
         var _this = this;
         this.userService.getLocationUsers({location : location }).subscribe(
             data => {
-               this.locationUsers = data.locationUsers;
+               this.locationUsers = data.location;
             },
             error => {})   
     }
@@ -301,15 +295,15 @@ export class HomeComponent {
     }
 
     addUser(event:any) {
-        var data = {"eid" : event.newData.eid,
-        "location" : localStorage.getItem('location'),
+        var data = {"eid" : event.newData.EMPNO,
+        "location" :this.currentLocation.tag,
         "viewPermissionRoot" : event.newData.viewPermissionRoot
                     };
         this.userService.insertUser(data
         ).subscribe(
             data => {
                 event.confirm.resolve(event.newData);
-                this.router.navigate(['']);
+                this.ngOnInit();
             },
             error => {
                 if (error.error instanceof Error) {
@@ -325,9 +319,9 @@ export class HomeComponent {
                     "problem" : event.newData.problem,
                     "description" : event.newData.description,
                     "priority" : event.newData.priority,
-                    "siteEngineer" : event.newData.siteEngineer,
-                    "engineerInCharge" : event.newData.engineerInCharge,
-                    "hod" : event.newData.hod,
+                    "siteEngineer" : Number(event.newData.siteEngineer),
+                    "engineerInCharge" : Number(event.newData.engineerInCharge),
+                    "hod" : Number(event.newData.hod),
                     "workOrderNo" : event.newData.workOrderNo,
                     "workOrderDetails" : event.newData.workOrderDetails,
                     "location" : this.currentLocation.tag};
@@ -335,7 +329,7 @@ export class HomeComponent {
         ).subscribe(
             data => {
                 event.confirm.resolve(event.newData);
-                this.router.navigate(['']);
+                this.ngOnInit();
             },
             error => {
                 if (error.error instanceof Error) {
@@ -357,7 +351,7 @@ export class HomeComponent {
             ).subscribe(
                 data => {
                     event.confirm.resolve(event.newData);
-                    this.router.navigate(['']);
+                    this.ngOnInit();
                 },
                 error => {
                     if (error.error instanceof Error) {
@@ -384,7 +378,7 @@ export class HomeComponent {
               ).subscribe(
                   data => {
                       event.confirm.resolve(event.newData);
-                      this.router.navigate(['']);
+                      this.ngOnInit();
                   },
                   error => {
                       if (error.error instanceof Error) {
@@ -394,27 +388,7 @@ export class HomeComponent {
                       }
                   });
           }
-    
-        deleteUser(event:any) {
-            var data = {"eid" : event.data.eid,
-                      "location" :  localStorage.getItem('location'),
-                      "viewPermissionRoot" : event.data.viewPermissionRoot,
-                      "_id" : event.data._id
-            }
-            this.userService.deleteUser(data
-              ).subscribe(
-                  data => {
-                      event.confirm.resolve(event.data);
-                      this.router.navigate(['']);
-                  },
-                  error => {
-                      if (error.error instanceof Error) {
-                          console.log("Client-side error occured.");
-                      } else {
-                          console.log("Server-side error occured.");
-                      }
-                  });
-          }
+  
           deleteProblem(event:any) {
             var data = {"eid" : localStorage.getItem('username'),
             "problem" : event.data.problem,
@@ -426,13 +400,13 @@ export class HomeComponent {
             "workOrderNo" : event.data.workOrderNo,
             "workOrderDetails" : event.data.workOrderDetails,
             "location" : localStorage.getItem('location'),
-                      "_id" : event.data._id
+            "_id" : event.data._id
             }
             this.problemService.deleteProblem(data
               ).subscribe(
                   data => {
                       event.confirm.resolve(event.data);
-                      this.router.navigate(['']);
+                      this.ngOnInit();
                   },
                   error => {
                       if (error.error instanceof Error) {
@@ -456,7 +430,9 @@ export class HomeComponent {
         this.locationService.getLocationConfig().subscribe(data => {
             this.locationConfig = data
             this.filteredLocationList = this.appitems = this.searchTree(this.locationConfig[0], localStorage.getItem('username'))
-            // this.locationService.setFilteredLocationTree(this.filteredLocationList);
+            this.selectLocation(null);
+            this.setTreeView(this.appitems[0].tag)
+            this.initTableSettings();
         },
         error => {});
     }
@@ -493,7 +469,7 @@ export class HomeComponent {
             "faIcon": 'fa fa-university fa-1x'
         }).subscribe(
             data => {
-                console.log("Location Saved" + data);
+               
                 this.getLocationTree();
             },
             error => {

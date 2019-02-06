@@ -14,7 +14,7 @@ import { routing }        from './app.routing';
 import { ChartModule } from 'angular-highcharts';
 import { AuthGuard } from './_guards';
 import { JwtInterceptor } from './_helpers';
-import { HindiDataService, AlertService, AuthenticationService, userService,problemService,LocationService, } from './_services';
+import { AlertService, AuthenticationService, userService,problemService,LocationService, } from './_services';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { FilterPipe} from './home/filter.pipe';
 import { HomeComponent } from './home';
@@ -47,12 +47,11 @@ import { ToastrModule } from 'ngx-toastr';
         NgxPaginationModule,
         Ng2SmartTableModule,    
         BrowserModule, 
-        BrowserAnimationsModule, 
-        ToastrModule.forRoot(),
         AngularFontAwesomeModule,
         NgMaterialMultilevelMenuModule,
-        BrowserAnimationsModule,
         CommonModule,
+        BrowserAnimationsModule, 
+        ToastrModule.forRoot(),
         RouterModule.forRoot(appRoutes, {onSameUrlNavigation: 'reload'})
         ],
         declarations: [
@@ -68,7 +67,6 @@ import { ToastrModule } from 'ngx-toastr';
             UserComponent        ],
         providers: [
             AuthGuard,
-            HindiDataService,
             AlertService,
             AuthenticationService,
             WindowScrolling,
